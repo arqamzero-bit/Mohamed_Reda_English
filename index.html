@@ -5,229 +5,1267 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher & Student Tracking System - Mohamed Reda</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
     <style>
-        /* All styles remain unchanged from original except for direction/language adjustments */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; background: #f3f4f6; color: #111; transition: all 0.3s ease; }
-        .firebase-section { background: linear-gradient(135deg, #ff6b6b, #ffa726); color: white; padding: 12px 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 3px 5px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
-        .firebase-section h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
-        .firebase-section h3 i { font-size: 1.3rem; }
-        .firebase-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .firebase-btn { padding: 6px 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; transition: all 0.3s; display: flex; align-items: center; gap: 5px; }
-        .btn-cloud { background: #4285f4; color: white; } .btn-cloud:hover { background: #3367d6; }
-        .btn-local { background: #34a853; color: white; } .btn-local:hover { background: #2e8b47; }
-        .btn-sync { background: #fbbc05; color: #000; } .btn-sync:hover { background: #e6ac00; }
-        .btn-login { background: #ea4335; color: white; } .btn-login:hover { background: #d33426; }
-        .btn-fix-emails { background: #8b5cf6; color: white; } .btn-fix-emails:hover { background: #7c3aed; }
-        .btn-export-excel { background: #059669; color: white; } .btn-export-excel:hover { background: #047857; }
-        .btn-delete-all-users { background: #dc2626; color: white; } .btn-delete-all-users:hover { background: #b91c1c; }
-        .btn-update-subject { background: #8b5cf6; color: white; } .btn-update-subject:hover { background: #7c3aed; }
-        .btn-admin { background: #8b5cf6; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-admin:hover { background: #7c3aed; }
-        .btn-danger { background: #dc2626; color: white; } .btn-danger:hover { background: #b91c1c; }
-        .btn-view-data { background: #6366f1; color: white; } .btn-view-data:hover { background: #4f46e5; }
-        .firebase-status { background: rgba(255, 255, 255, 0.2); padding: 6px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-        .firebase-status.online { background: rgba(52, 168, 83, 0.3); border-left: 3px solid #34a853; }
-        .firebase-status.offline { background: rgba(234, 67, 53, 0.3); border-left: 3px solid #ea4335; }
-        .firebase-login-form { background: white; padding: 15px; border-radius: 8px; margin-top: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: none; }
-        .firebase-login-form.show { display: block; }
-        .login-input-group { margin-bottom: 10px; }
-        .login-input-group label { display: block; margin-bottom: 5px; color: #4f46e5; font-weight: bold; font-size: 13px; }
-        .login-input-group input { width: 100%; padding: 8px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 13px; }
-        .login-buttons { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .calendar-wrapper { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 3px 5px rgba(0,0,0,0.05); display: none; animation: fadeIn 0.3s ease; position: relative; z-index: 100; }
-        .calendar-wrapper.show { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .calendar-header h3 { font-size: 1.1rem; color: #4f46e5; }
-        .calendar-nav-btn { background: #e0e7ff; border: none; color: #4f46e5; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .calendar-nav-btn:hover { background: #c7d2fe; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .calendar-day-name { font-weight: bold; font-size: 12px; color: #6b7280; padding: 5px 0; }
-        .day-cell { padding: 8px 0; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.2s; background: #f9fafb; user-select: none; }
-        .day-cell:hover { background: #e0e7ff; color: #4f46e5; }
-        .day-cell.today { border: 2px solid #818cf8; font-weight: bold; }
-        .day-cell.active { background: #4f46e5; color: white; font-weight: bold; box-shadow: 0 2px 5px rgba(79, 70, 229, 0.4); }
-        .day-cell.empty { background: transparent; cursor: default; }
-        /* Language toggle removed */
-        .top-section { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: flex-end; margin-bottom: 15px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 3px 5px rgba(0,0,0,0.05); }
-        .control-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 180px; }
-        .control-group label { font-weight: bold; color: #4f46e5; font-size: 13px; }
-        select, input[type="text"] { padding: 8px; border-radius: 6px; border: 2px solid #e5e7eb; font-size: 13px; background: white; cursor: pointer; width: 100%; }
-        .btn-add-teacher { background: #059669; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-delete-teacher { background: #dc2626; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-import-teachers { background: #059669; color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 5px; }
-        .btn-import-teachers:hover { background: #047857; }
-        .teacher-card { display: flex; align-items: center; background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 15px; border-radius: 10px; box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px; animation: fadeInUp 0.5s forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .teacher-icon { font-size: 2rem; background: rgba(255, 255, 255, 0.2); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
-        [dir="rtl"] .teacher-icon { margin-left: 15px; } [dir="ltr"] .teacher-icon { margin-right: 15px; }
-        .teacher-info h3 { margin: 0; font-size: 1.2rem; }
-        .teacher-info p { margin: 3px 0 0; opacity: 0.9; font-size: 1rem; }
-        h2 { text-align: center; margin-bottom: 12px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .calendar-toggle-btn { background: none; border: none; cursor: pointer; color: #4f46e5; font-size: 1.4rem; transition: transform 0.2s; }
-        .calendar-toggle-btn:hover { transform: scale(1.1); color: #6366f1; }
-        .current-date-display { background: #e0e7ff; color: #4f46e5; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
-        .year-report-btn { background: #6366f1; color: white; border: none; border-radius: 20px; padding: 5px 12px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s; }
-        .year-report-btn:hover { background: #4f46e5; transform: scale(1.05); }
-        .reset-all-btn { background: #dc2626; color: white; border: none; border-radius: 20px; padding: 5px 12px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s; }
-        .reset-all-btn:hover { background: #b91c1c; transform: scale(1.05); }
-        .btn-add-class { background: #8b5cf6; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-add-class:hover { background: #7c3aed; }
-        .btn-delete-class { background: #dc2626; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-delete-class:hover { background: #b91c1c; }
-        #controls { text-align: center; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; }
-        #controls input, #controls select, #controls button { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 12px; }
-        .btn-add-student { background: #4f46e5; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 12px; }
-        #importExcelLabel { cursor: pointer; background: #4f46e5; color: white; padding: 6px 10px; border-radius: 6px; display: inline-block; font-size: 12px; }
-        #exportExcel { background: #059669; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 12px; }
-        #students { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .student-container { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-        .student { width: 100%; background: #4f46e5; color: white; border-radius: 8px; text-align: center; padding: 12px 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: transform 0.2s, opacity 0.2s, background-color 0.5s ease; box-shadow: 0 3px 5px rgba(0,0,0,0.1); position: relative; z-index: 1; }
-        .student:hover { transform: translateY(-2px); opacity: 0.95; }
-        .student.selected { border: 2px solid #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); transform: translateY(-2px); }
-        .quick-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: 100%; }
-        .quick-controls button { border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 2px solid white; font-weight: bold; }
-        .quick-controls button:hover { transform: scale(1.1); box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
-        .quick-controls button:active { transform: scale(0.9); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
-        .btn-participate { background: #22c55e; color: white; }
-        .btn-talk { background: #f59e0b; color: #000; }
-        .btn-no-part { background: #6366f1; color: white; }
-        .btn-behavior { background: #000000; color: white; }
-        .btn-absent { background: #ef4444; color: white; }
-        .btn-lateness { background: #a855f7; color: white; }
-        .btn-reset { background: #3b82f6; color: white; }
-        .btn-book { background: #10b981; color: white; } 
-        .btn-notebook { background: #6366f1; color: white; } 
-        .btn-homework { background: #3b82f6; color: white; } 
-        .btn-delete-student { background: #ef4444; color: white; border-radius: 4px; width: auto; padding: 0 6px; font-size: 11px; } 
-        .btn-edit-student { background: #f59e0b; color: white; border-radius: 4px; width: auto; padding: 0 6px; font-size: 11px; }
-        .table-container { overflow-x: auto; margin: 15px 0; border-radius: 8px; box-shadow: 0 3px 5px rgba(0,0,0,0.1); font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; background: white; min-width: 1200px; }
-        th, td { border: 1px solid #ddd; padding: 6px 5px; text-align: center; font-size: 11px; white-space: nowrap; height: 50px; }
-        th { background: #e0e7ff; font-weight: bold; position: sticky; top: 0; z-index: 10; font-size: 11px; }
-        td { vertical-align: middle; }
-        tr:nth-child(even) { background-color: #f8fafc; }
-        tr:hover { background-color: #f1f5f9; }
-        select { width: 100%; padding: 4px; border-radius: 3px; border: 1px solid #ccc; background: white; font-size: 11px; }
-        .stars { font-size: 13px; margin-bottom: 1px; }
-        .stars-count { display: block; font-size: 10px; color: #666; font-weight: bold; }
-        .status-text-cell { font-size: 11px; padding: 2px !important; border-radius: 4px; transition: background-color 0.3s; }
-        .cell-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 4px; }
-        .action-label { font-size: 10px; font-weight: 800; line-height: 1.2; text-align: center; width: 100%; }
-        .counter-value { font-size: 14px; font-weight: 900; color: #1f2937; background: rgba(255,255,255,0.5); padding: 1px 6px; border-radius: 10px; }
-        .text-gift { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .text-warn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-        .text-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .text-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-        .text-neutral { background: #f3f4f6; color: #374151; font-weight: normal; }
-        #trophyPopup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 150px; opacity: 0; transition: all 0.6s ease; z-index: 9999; pointer-events: none; text-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
-        #trophyPopup.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        .check-cell { cursor: pointer; padding: 6px !important; }
-        .check-cell-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
-        .check-icon { font-size: 16px; margin-bottom: 2px; }
-        .check-icon.active { color: #22c55e; }
-        .check-icon.inactive { color: #ef4444; }
-        .check-counter { display: block; font-size: 10px; color: #666; font-weight: bold; background: #f3f4f6; padding: 1px 4px; border-radius: 3px; min-width: 25px; }
-        .table-quick-actions { display: flex; gap: 3px; margin-top: 3px; justify-content: center; flex-wrap: wrap; }
-        .table-quick-actions button { background: #e0e7ff; border: 1px solid #a5b4fc; border-radius: 3px; padding: 2px 6px; font-size: 11px; cursor: pointer; transition: all 0.2s; color: #4f46e5; font-weight: bold; }
-        .table-quick-actions button:hover { background: #c7d2fe; transform: scale(1.05); }
-        .table-counter-btn { background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; font-weight: bold; margin: 1px; }
-        .table-counter-btn:hover { background: #fecaca; }
-        .level-عبقري, .level-Genius { color: #9333ea; font-weight: bold; }
-        .level-موهوب, .level-Talented { color: #2563eb; font-weight: bold; }
-        .level-متفوق, .level-Excellent { color: #059669; font-weight: bold; }
-        .level-ممتاز, .level-VeryGood { color: #16a34a; font-weight: bold; }
-        .level-جيد, .level-Good { color: #ca8a04; font-weight: bold; }
-        .level-منخفض, .level-Low { color: #dc2626; font-weight: bold; }
-        .progress-percentage { font-weight: bold; font-size: 12px; color: #7c3aed; background: #f5f3ff; padding: 4px; border-radius: 4px; }
-        .copyright-footer { text-align: center; margin-top: 20px; padding: 10px; color: #666; font-size: 12px; border-top: 1px solid #e5e7eb; background: white; border-radius: 8px; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; visibility: hidden; opacity: 0; transition: all 0.3s; }
-        .modal-overlay.show { visibility: visible; opacity: 1; }
-        .modal-content { background: white; padding: 20px; border-radius: 10px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .modal-content h3 { color: #4f46e5; margin-bottom: 15px; text-align: center; }
-        .modal-field { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-        .modal-field label { width: 120px; font-weight: bold; font-size: 12px; color: #333; }
-        .modal-field input, .modal-field select { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-        .modal-field input[type="number"] { -moz-appearance: textfield; }
-        .modal-field input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
-        .modal-buttons { display: flex; justify-content: space-around; margin-top: 20px; }
-        .modal-buttons button { padding: 8px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .modal-save { background: #4f46e5; color: white; }
-        .modal-cancel { background: #9ca3af; color: white; }
-        .admin-only { display: none !important; }
-        .admin-only.show { display: inline-flex !important; }
-        .admin-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 20000; visibility: hidden; opacity: 0; transition: all 0.3s; }
-        .admin-modal-overlay.show { visibility: visible; opacity: 1; }
-        .admin-modal-content { background: white; padding: 20px; border-radius: 12px; max-width: 95%; width: 1400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
-        .admin-modal-content h3 { color: #4f46e5; text-align: center; margin-bottom: 15px; }
-        .admin-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; background: #f3f4f6; padding: 10px; border-radius: 8px; }
-        .admin-filters label { font-weight: bold; color: #333; }
-        .admin-filters select, .admin-filters input { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px; }
-        .admin-table-container { overflow-x: auto; max-height: 60vh; border: 1px solid #ddd; border-radius: 6px; }
-        .admin-table-container table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 1800px; }
-        .admin-table-container th { background: #4f46e5; color: white; position: sticky; top: 0; z-index: 10; padding: 8px 5px; border: 1px solid #333; text-align: center; }
-        .admin-table-container td { padding: 5px 4px; border: 1px solid #ddd; text-align: center; white-space: nowrap; }
-        .admin-table-container tr:nth-child(even) { background: #f9fafb; }
-        .admin-modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
-        .admin-modal-actions button { padding: 8px 18px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .btn-close-modal { background: #9ca3af; color: white; }
-        .btn-close-modal:hover { background: #6b7280; }
-
-        /* Charts */
-        #adminChartsSection { margin-top: 30px; display: none; }
-        #adminChartsSection h3 { text-align: center; margin-bottom: 20px; color: #4f46e5; font-size: 22px; }
-        #adminChartsSection .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-bottom: 20px; }
-        #adminChartsSection .chart-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
-        #adminChartsSection .chart-card h4 { margin-bottom: 15px; color: #374151; font-size: 16px; padding-bottom: 5px; border-bottom: 2px solid #8b5cf6; }
-        #adminChartsSection .chart-card h4 i { margin-left: 8px; }
-        #adminChartsSection .chart-card .chart-wrapper { position: relative; height: 300px; }
-
-        #adminDataContainer { margin-top: 25px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; display: none; }
-        #adminDataContainer h3 { color: #4f46e5; font-size: 18px; }
-        #adminDataContainer .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        #adminDataContainer .stat-card { padding: 15px; border-radius: 8px; }
-        #adminDataContainer .stat-card span { font-size: 12px; font-weight: bold; }
-        #adminDataContainer .stat-card h2 { margin-top: 5px; font-size: 24px; }
-        #adminDataContainer .stat-card.green { background: #f0fdf4; border-left: 4px solid #16a34a; }
-        #adminDataContainer .stat-card.green span { color: #16a34a; }
-        #adminDataContainer .stat-card.green h2 { color: #14532d; }
-        #adminDataContainer .stat-card.red { background: #fef2f2; border-left: 4px solid #dc2626; }
-        #adminDataContainer .stat-card.red span { color: #dc2626; }
-        #adminDataContainer .stat-card.red h2 { color: #7f1d1d; }
-        #adminDataContainer .stat-card.yellow { background: #fffbeb; border-left: 4px solid #d97706; }
-        #adminDataContainer .stat-card.yellow span { color: #d97706; }
-        #adminDataContainer .stat-card.yellow h2 { color: #78350f; }
-        #adminDataContainer .stat-card.blue { background: #eff6ff; border-left: 4px solid #2563eb; }
-        #adminDataContainer .stat-card.blue span { color: #2563eb; }
-        #adminDataContainer .stat-card.blue h2 { color: #1e3a8a; }
-
-        @media (max-width: 768px) {
-            body { padding: 8px; }
-            #controls, .top-section { flex-direction: column; }
-            #controls input, #controls button, .top-section input, .top-section select, .top-section button { width: 100%; }
-            th, td { padding: 5px 4px; font-size: 10px; }
-            .table-container { border-radius: 6px; }
-            .firebase-section { flex-direction: column; align-items: stretch; }
-            .firebase-controls { justify-content: center; }
-            .day-cell { padding: 5px 0; font-size: 12px; }
-            #adminChartsSection .charts-grid { grid-template-columns: 1fr; }
-            #adminDataContainer .stats-grid { grid-template-columns: 1fr 1fr; }
+        /* All original styles (unchanged) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        [dir="rtl"] .control-group label, [dir="rtl"] #boardTitle, [dir="rtl"] .copyright-footer { text-align: right; }
-        [dir="ltr"] .control-group label, [dir="ltr"] #boardTitle, [dir="ltr"] .copyright-footer { text-align: left; }
-        [dir="ltr"] .top-section { flex-direction: row; }
-        [dir="ltr"] .student { text-align: center; }
-        [dir="ltr"] table th { text-align: center; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 15px;
+            background: #f3f4f6;
+            color: #111;
+            transition: all 0.3s ease;
+        }
+        .firebase-section {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .firebase-section h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .firebase-section h3 i {
+            font-size: 1.3rem;
+        }
+        .firebase-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .firebase-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-cloud {
+            background: #4285f4;
+            color: white;
+        }
+        .btn-cloud:hover {
+            background: #3367d6;
+        }
+        .btn-local {
+            background: #34a853;
+            color: white;
+        }
+        .btn-local:hover {
+            background: #2e8b47;
+        }
+        .btn-sync {
+            background: #fbbc05;
+            color: #000;
+        }
+        .btn-sync:hover {
+            background: #e6ac00;
+        }
+        .btn-login {
+            background: #ea4335;
+            color: white;
+        }
+        .btn-login:hover {
+            background: #d33426;
+        }
+        .btn-fix-emails {
+            background: #8b5cf6;
+            color: white;
+        }
+        .btn-fix-emails:hover {
+            background: #7c3aed;
+        }
+        .btn-export-excel {
+            background: #059669;
+            color: white;
+        }
+        .btn-export-excel:hover {
+            background: #047857;
+        }
+        .btn-delete-all-users {
+            background: #dc2626;
+            color: white;
+        }
+        .btn-delete-all-users:hover {
+            background: #b91c1c;
+        }
+        .btn-update-subject {
+            background: #8b5cf6;
+            color: white;
+        }
+        .btn-update-subject:hover {
+            background: #7c3aed;
+        }
+        .btn-admin {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-admin:hover {
+            background: #7c3aed;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        .btn-view-data {
+            background: #6366f1;
+            color: white;
+        }
+        .btn-view-data:hover {
+            background: #4f46e5;
+        }
+        .firebase-status {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .firebase-status.online {
+            background: rgba(52, 168, 83, 0.3);
+            border-left: 3px solid #34a853;
+        }
+        .firebase-status.offline {
+            background: rgba(234, 67, 53, 0.3);
+            border-left: 3px solid #ea4335;
+        }
+        .firebase-login-form {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+        .firebase-login-form.show {
+            display: block;
+        }
+        .login-input-group {
+            margin-bottom: 10px;
+        }
+        .login-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4f46e5;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .login-input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .login-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .calendar-wrapper {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);
+            display: none;
+            animation: fadeIn 0.3s ease;
+            position: relative;
+            z-index: 100;
+        }
+        .calendar-wrapper.show {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .calendar-header h3 {
+            font-size: 1.1rem;
+            color: #4f46e5;
+        }
+        .calendar-nav-btn {
+            background: #e0e7ff;
+            border: none;
+            color: #4f46e5;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .calendar-nav-btn:hover {
+            background: #c7d2fe;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+        .calendar-day-name {
+            font-weight: bold;
+            font-size: 12px;
+            color: #6b7280;
+            padding: 5px 0;
+        }
+        .day-cell {
+            padding: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: #f9fafb;
+            user-select: none;
+        }
+        .day-cell:hover {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+        .day-cell.today {
+            border: 2px solid #818cf8;
+            font-weight: bold;
+        }
+        .day-cell.active {
+            background: #4f46e5;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.4);
+        }
+        .day-cell.empty {
+            background: transparent;
+            cursor: default;
+        }
+        /* Remove language toggle because we only want English now */
+        #languageToggle {
+            display: none;
+        }
+        .top-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 180px;
+        }
+        .control-group label {
+            font-weight: bold;
+            color: #4f46e5;
+            font-size: 13px;
+        }
+        select,
+        input[type="text"] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 2px solid #e5e7eb;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-add-teacher {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .btn-delete-teacher {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .btn-import-teachers {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-import-teachers:hover {
+            background: #047857;
+        }
+        .teacher-card {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #4f46e5, #818cf8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            animation: fadeInUp 0.5s forwards;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .teacher-icon {
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+        .teacher-info h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .teacher-info p {
+            margin: 3px 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .calendar-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #4f46e5;
+            font-size: 1.4rem;
+            transition: transform 0.2s;
+        }
+        .calendar-toggle-btn:hover {
+            transform: scale(1.1);
+            color: #6366f1;
+        }
+        .current-date-display {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .year-report-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .year-report-btn:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+        }
+        .reset-all-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .reset-all-btn:hover {
+            background: #b91c1c;
+            transform: scale(1.05);
+        }
+        .btn-add-class {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-add-class:hover {
+            background: #7c3aed;
+        }
+        .btn-delete-class {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-delete-class:hover {
+            background: #b91c1c;
+        }
+        #controls {
+            text-align: center;
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        #controls input,
+        #controls select,
+        #controls button {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 12px;
+        }
+        .btn-add-student {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        #importExcelLabel {
+            cursor: pointer;
+            background: #4f46e5;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 12px;
+        }
+        #exportExcel {
+            background: #059669;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        #students {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .student-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .student {
+            width: 100%;
+            background: #4f46e5;
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            padding: 12px 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: transform 0.2s, opacity 0.2s, background-color 0.5s ease;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .student:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+        .student.selected {
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        .quick-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+        }
+        .quick-controls button {
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 2px solid white;
+            font-weight: bold;
+        }
+        .quick-controls button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        .quick-controls button:active {
+            transform: scale(0.9);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .btn-participate {
+            background: #22c55e;
+            color: white;
+        }
+        .btn-talk {
+            background: #f59e0b;
+            color: #000;
+        }
+        .btn-no-part {
+            background: #6366f1;
+            color: white;
+        }
+        .btn-behavior {
+            background: #000000;
+            color: white;
+        }
+        .btn-absent {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-lateness {
+            background: #a855f7;
+            color: white;
+        }
+        .btn-reset {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-book {
+            background: #10b981;
+            color: white;
+        }
+        .btn-notebook {
+            background: #6366f1;
+            color: white;
+        }
+        .btn-homework {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-delete-student {
+            background: #ef4444;
+            color: white;
+            border-radius: 4px;
+            width: auto;
+            padding: 0 6px;
+            font-size: 11px;
+        }
+        .btn-edit-student {
+            background: #f59e0b;
+            color: white;
+            border-radius: 4px;
+            width: auto;
+            padding: 0 6px;
+            font-size: 11px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 1200px;
+        }
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px 5px;
+            text-align: center;
+            font-size: 11px;
+            white-space: nowrap;
+            height: 50px;
+        }
+        th {
+            background: #e0e7ff;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-size: 11px;
+        }
+        td {
+            vertical-align: middle;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        select {
+            width: 100%;
+            padding: 4px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            background: white;
+            font-size: 11px;
+        }
+        .stars {
+            font-size: 13px;
+            margin-bottom: 1px;
+        }
+        .stars-count {
+            display: block;
+            font-size: 10px;
+            color: #666;
+            font-weight: bold;
+        }
+        .status-text-cell {
+            font-size: 11px;
+            padding: 2px !important;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .cell-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 4px;
+        }
+        .action-label {
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.2;
+            text-align: center;
+            width: 100%;
+        }
+        .counter-value {
+            font-size: 14px;
+            font-weight: 900;
+            color: #1f2937;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+        .text-gift {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .text-warn {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .text-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .text-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        .text-neutral {
+            background: #f3f4f6;
+            color: #374151;
+            font-weight: normal;
+        }
+        #trophyPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 150px;
+            opacity: 0;
+            transition: all 0.6s ease;
+            z-index: 9999;
+            pointer-events: none;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+        #trophyPopup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        .check-cell {
+            cursor: pointer;
+            padding: 6px !important;
+        }
+        .check-cell-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .check-icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+        .check-icon.active {
+            color: #22c55e;
+        }
+        .check-icon.inactive {
+            color: #ef4444;
+        }
+        .check-counter {
+            display: block;
+            font-size: 10px;
+            color: #666;
+            font-weight: bold;
+            background: #f3f4f6;
+            padding: 1px 4px;
+            border-radius: 3px;
+            min-width: 25px;
+        }
+        .table-quick-actions {
+            display: flex;
+            gap: 3px;
+            margin-top: 3px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .table-quick-actions button {
+            background: #e0e7ff;
+            border: 1px solid #a5b4fc;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #4f46e5;
+            font-weight: bold;
+        }
+        .table-quick-actions button:hover {
+            background: #c7d2fe;
+            transform: scale(1.05);
+        }
+        .table-counter-btn {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 1px;
+        }
+        .table-counter-btn:hover {
+            background: #fecaca;
+        }
+        .level-Genius {
+            color: #9333ea;
+            font-weight: bold;
+        }
+        .level-Talented {
+            color: #2563eb;
+            font-weight: bold;
+        }
+        .level-Advanced {
+            color: #059669;
+            font-weight: bold;
+        }
+        .level-Excellent {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .level-Good {
+            color: #ca8a04;
+            font-weight: bold;
+        }
+        .level-Low {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .progress-percentage {
+            font-weight: bold;
+            font-size: 12px;
+            color: #7c3aed;
+            background: #f5f3ff;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        .copyright-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .modal-content h3 {
+            color: #4f46e5;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .modal-field {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-field label {
+            width: 120px;
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+        }
+        .modal-field input,
+        .modal-field select {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .modal-field input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .modal-field input[type="number"]::-webkit-inner-spin-button {
+            opacity: 1;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-save {
+            background: #4f46e5;
+            color: white;
+        }
+        .modal-cancel {
+            background: #9ca3af;
+            color: white;
+        }
+        .admin-only {
+            display: none !important;
+        }
+        .admin-only.show {
+            display: inline-flex !important;
+        }
+        .admin-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .admin-modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .admin-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 95%;
+            width: 1400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+        .admin-modal-content h3 {
+            color: #4f46e5;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .admin-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            align-items: center;
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .admin-filters label {
+            font-weight: bold;
+            color: #333;
+        }
+        .admin-filters select,
+        .admin-filters input {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+        }
+        .admin-table-container {
+            overflow-x: auto;
+            max-height: 60vh;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .admin-table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 1800px;
+        }
+        .admin-table-container th {
+            background: #4f46e5;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 8px 5px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+        .admin-table-container td {
+            padding: 5px 4px;
+            border: 1px solid #ddd;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .admin-table-container tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        .admin-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .admin-modal-actions button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-close-modal {
+            background: #9ca3af;
+            color: white;
+        }
+        .btn-close-modal:hover {
+            background: #6b7280;
+        }
+        /* Chart styles */
+        #adminChartsSection {
+            margin-top: 30px;
+            display: none;
+        }
+        #adminChartsSection h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4f46e5;
+            font-size: 22px;
+        }
+        #adminChartsSection .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        #adminChartsSection .chart-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+        #adminChartsSection .chart-card h4 {
+            margin-bottom: 15px;
+            color: #374151;
+            font-size: 16px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #8b5cf6;
+        }
+        #adminChartsSection .chart-card h4 i {
+            margin-left: 8px;
+        }
+        #adminChartsSection .chart-card .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        #adminDataContainer {
+            margin-top: 25px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            display: none;
+        }
+        #adminDataContainer h3 {
+            color: #4f46e5;
+            font-size: 18px;
+        }
+        #adminDataContainer .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        #adminDataContainer .stat-card {
+            padding: 15px;
+            border-radius: 8px;
+        }
+        #adminDataContainer .stat-card span {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        #adminDataContainer .stat-card h2 {
+            margin-top: 5px;
+            font-size: 24px;
+        }
+        #adminDataContainer .stat-card.green {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+        }
+        #adminDataContainer .stat-card.green span {
+            color: #16a34a;
+        }
+        #adminDataContainer .stat-card.green h2 {
+            color: #14532d;
+        }
+        #adminDataContainer .stat-card.red {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+        }
+        #adminDataContainer .stat-card.red span {
+            color: #dc2626;
+        }
+        #adminDataContainer .stat-card.red h2 {
+            color: #7f1d1d;
+        }
+        #adminDataContainer .stat-card.yellow {
+            background: #fffbeb;
+            border-left: 4px solid #d97706;
+        }
+        #adminDataContainer .stat-card.yellow span {
+            color: #d97706;
+        }
+        #adminDataContainer .stat-card.yellow h2 {
+            color: #78350f;
+        }
+        #adminDataContainer .stat-card.blue {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+        }
+        #adminDataContainer .stat-card.blue span {
+            color: #2563eb;
+        }
+        #adminDataContainer .stat-card.blue h2 {
+            color: #1e3a8a;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+            #controls,
+            .top-section {
+                flex-direction: column;
+            }
+            #controls input,
+            #controls button,
+            .top-section input,
+            .top-section select,
+            .top-section button {
+                width: 100%;
+            }
+            th,
+            td {
+                padding: 5px 4px;
+                font-size: 10px;
+            }
+            .table-container {
+                border-radius: 6px;
+            }
+            .firebase-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .firebase-controls {
+                justify-content: center;
+            }
+            .day-cell {
+                padding: 5px 0;
+                font-size: 12px;
+            }
+            #adminChartsSection .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            #adminDataContainer .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .control-group label,
+        #boardTitle,
+        .copyright-footer {
+            text-align: right;
+        }
+        /* For English, we use ltr direction for most elements, but keep some right-aligned for labels */
+        body {
+            direction: ltr;
+        }
+        .control-group label,
+        #boardTitle,
+        .copyright-footer {
+            text-align: left;
+        }
+        .teacher-card .teacher-info {
+            text-align: left;
+        }
     </style>
 </head>
-
 <body>
     <!-- Firebase Bar -->
     <div class="firebase-section">
@@ -237,15 +1275,15 @@
             <button id="useCloudBtn" class="firebase-btn btn-cloud"><i class="fas fa-cloud"></i> Cloud Storage</button>
             <button id="syncDataBtn" class="firebase-btn btn-sync"><i class="fas fa-sync-alt"></i> Sync</button>
             <button id="loginBtn" class="firebase-btn btn-login"><i class="fas fa-sign-in-alt"></i> Login</button>
-            
+
             <button id="fixEmailsBtn" class="firebase-btn btn-fix-emails admin-only"><i class="fas fa-envelope"></i> Fix Emails</button>
             <button id="adminViewBtn" class="btn-admin admin-only"><i class="fas fa-eye"></i> View All (Admin)</button>
             <button id="exportAllDataBtn" class="firebase-btn btn-export-excel admin-only"><i class="fas fa-file-excel"></i> Export All Data</button>
             <button id="deleteAllUsersBtn" class="firebase-btn btn-danger admin-only"><i class="fas fa-trash-alt"></i> Delete All Users</button>
-            <button id="updateSubjectBtn" class="firebase-btn btn-update-subject admin-only"><i class="fas fa-edit"></i> Update Teachers' Subjects</button>
+            <button id="updateSubjectBtn" class="firebase-btn btn-update-subject admin-only"><i class="fas fa-edit"></i> Update Teacher Subjects</button>
             <button id="clearAllDataBtn" class="firebase-btn btn-danger admin-only"><i class="fas fa-fire"></i> Clear All Data</button>
             <button id="viewAllDataBtn" class="firebase-btn btn-view-data admin-only"><i class="fas fa-database"></i> View All Data</button>
-            
+
             <div id="firebaseStatus" class="firebase-status offline"><i class="fas fa-wifi"></i> Offline</div>
         </div>
     </div>
@@ -263,14 +1301,12 @@
         <div id="loginMessage" style="margin-top: 10px; font-size: 12px; color: #333;"></div>
     </div>
 
-    <!-- Language toggle removed - English only -->
-
     <!-- Calendar -->
     <div class="calendar-wrapper" id="calendarWrapper">
         <div class="calendar-header">
-            <button class="calendar-nav-btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+            <button class="calendar-nav-btn" id="prevMonth"><i class="fas fa-chevron-right"></i></button>
             <h3 id="calendarTitle">October 2023</h3>
-            <button class="calendar-nav-btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+            <button class="calendar-nav-btn" id="nextMonth"><i class="fas fa-chevron-left"></i></button>
         </div>
         <div class="calendar-grid" id="calendarGrid"></div>
         <div style="text-align:center; margin-top:10px;">
@@ -290,7 +1326,7 @@
         </div>
         <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: flex-end;">
             <button id="addTeacherBtn" class="btn-add-teacher">➕ Add Teacher</button>
-            <label for="importTeachersExcel" id="importTeachersLabel" class="btn-import-teachers" title="Import teacher names from Excel file"><i class="fas fa-file-excel"></i> Import Teachers</label>
+            <label for="importTeachersExcel" id="importTeachersLabel" class="btn-import-teachers" title="Import teachers from Excel file"><i class="fas fa-file-excel"></i> Import Teachers</label>
             <input type="file" id="importTeachersExcel" accept=".xlsx" style="display:none;">
             <button id="deleteTeacherBtn" class="btn-delete-teacher">🗑️ Delete</button>
             <button id="deleteAllTeachersBtn" class="btn-delete-teacher" title="Delete all teachers" style="border: 2px solid white;">💥 Delete All</button>
@@ -298,7 +1334,7 @@
         <div class="control-group" id="classSelectSection">
             <label for="classSelect">Select Class:</label>
             <div style="display:flex; gap:4px; align-items:center;">
-                <select id="classSelect" style="flex:1;"><option value="4B">4th B</option><option value="4D">4th D</option><option value="5B">5th B</option><option value="5D">5th D</option><option value="6B">6th B</option><option value="6D">6th D</option><option value="7B">7th B</option><option value="7D">7th D</option><option value="8B">8th B</option><option value="8D">8th D</option><option value="9B">9th B</option><option value="9D">9th D</option><option value="10B">10th B</option><option value="10D">10th D</option><option value="11B">11th B</option><option value="11D">11th D</option><option value="12B">12th B</option><option value="12D">12th D</option></select>
+                <select id="classSelect" style="flex:1;"><option value="4B">4B</option><option value="4D">4D</option><option value="5B">5B</option><option value="5D">5D</option><option value="6B">6B</option><option value="6D">6D</option><option value="7B">7B</option><option value="7D">7D</option><option value="8B">8B</option><option value="8D">8D</option><option value="9B">9B</option><option value="9D">9D</option><option value="10B">10B</option><option value="10D">10D</option><option value="11B">11B</option><option value="11D">11D</option><option value="12B">12B</option><option value="12D">12D</option></select>
                 <button id="addClassBtn" class="btn-add-class" title="Add new class"><i class="fas fa-plus-circle"></i> Add</button>
                 <button id="deleteClassBtn" class="btn-delete-class" title="Delete current class"><i class="fas fa-trash-alt"></i> Delete</button>
             </div>
@@ -310,10 +1346,10 @@
 
     <!-- Board Title -->
     <h2 id="boardTitle">
-        <button class="calendar-toggle-btn" id="toggleCalendarBtn" title="Open calendar"><i class="far fa-calendar-alt"></i></button>
-        <span id="boardTitleText">📋 Teacher Tracking Board</span>
+        <button class="calendar-toggle-btn" id="toggleCalendarBtn" title="Open Calendar"><i class="far fa-calendar-alt"></i></button>
+        <span id="boardTitleText">📋 Teacher Dashboard</span>
         <span id="currentDateDisplay" class="current-date-display"></span>
-        <button id="showYearReportBtn" class="year-report-btn" title="Comprehensive report for all days"><i class="fas fa-file-excel"></i> Yearly</button>
+        <button id="showYearReportBtn" class="year-report-btn" title="Comprehensive yearly report"><i class="fas fa-file-excel"></i> Yearly</button>
         <button id="resetAllCountersBtn" class="reset-all-btn" title="Reset all counters to zero"><i class="fas fa-undo-alt"></i> Reset All</button>
     </h2>
 
@@ -321,16 +1357,16 @@
     <div id="controls">
         <input type="text" id="newStudentName" placeholder="Add student manually...">
         <button id="addStudentBtn" class="btn-add-student">➕ Add Student</button>
-        <label for="importExcel" id="importExcelLabel">📥 Import names from Excel</label>
+        <label for="importExcel" id="importExcelLabel">📥 Import Names from Excel</label>
         <input type="file" id="importExcel" accept=".xlsx" style="display:none;">
         <button id="exportExcel">📤 Export Excel</button>
-        <input type="text" id="classTitle" placeholder="Enter class name...">
+        <input type="text" id="classTitle" placeholder="Enter class title...">
     </div>
 
-    <!-- Students -->
+    <!-- Students Cards -->
     <div id="students"></div>
 
-    <!-- Table -->
+    <!-- Detailed Table -->
     <div class="table-container" id="tableContainer">
         <table id="report">
             <thead>
@@ -338,27 +1374,27 @@
                     <th data-key="name">Name</th>
                     <th data-key="rating">⭐ Rating</th>
                     <th data-key="goodParticipation">Good Participation</th>
-                    <th data-key="talkingInClass">Talking in Class</th>
-                    <th data-key="notParticipating">Not Participating</th>
+                    <th data-key="talkingInClass">Talks in Class</th>
+                    <th data-key="notParticipating">Does Not Participate</th>
                     <th data-key="behavior">Behavior</th>
-                    <th data-key="lateness">Lateness</th>
+                    <th data-key="lateness">Late</th>
                     <th data-key="attendance">Attendance</th>
                     <th data-key="book">📗 Book</th>
                     <th data-key="notebook">📒 Notebook</th>
                     <th data-key="homework">📘 Homework</th>
                     <th data-key="notes">Notes</th>
                     <th data-key="status">Status</th>
-                    <th data-key="participationCounter">Participation Counter</th>
+                    <th data-key="participationCounter">Participation Count</th>
                     <th data-key="level">Level</th>
                     <th data-key="progressPercentage">Progress %</th>
-                    <th data-key="absenceCounter">Absence Counter</th>
-                    <th data-key="talkingCounter">Talking Counter</th>
-                    <th data-key="talkWithoutPermission">No Participation</th>
-                    <th data-key="bookNotActive">No Book</th>
-                    <th data-key="notebookNotActive">No Notebook</th>
-                    <th data-key="homeworkNotActive">No Homework</th>
+                    <th data-key="absenceCounter">Absence Count</th>
+                    <th data-key="talkingCounter">Talks in Class</th>
+                    <th data-key="talkWithoutPermission">Does Not Participate</th>
+                    <th data-key="bookNotActive">Book Missing</th>
+                    <th data-key="notebookNotActive">Notebook Missing</th>
+                    <th data-key="homeworkNotActive">Homework Missing</th>
                     <th data-key="badBehaviorCounter">Behavior Count</th>
-                    <th data-key="latenessCounter">Lateness Counter</th>
+                    <th data-key="latenessCounter">Lateness Count</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -374,7 +1410,7 @@
                 <div class="chart-wrapper"><canvas id="teacherBarChart"></canvas></div>
             </div>
             <div class="chart-card">
-                <h4><i class="fa-solid fa-chart-pie"></i> Overall Behavioral & Status Analysis</h4>
+                <h4><i class="fa-solid fa-chart-pie"></i> Analysis of Cases and Behavioral Phenomena</h4>
                 <div class="chart-wrapper"><canvas id="schoolPieChart"></canvas></div>
             </div>
         </div>
@@ -384,10 +1420,10 @@
     <div id="adminDataContainer"></div>
 
     <!-- Footer -->
-    <div class="copyright-footer"><p id="copyrightFooter">📊 Teacher & Student Tracking System - © 2026 Mohamed Reda Awf - All Rights Reserved</p></div>
+    <div class="copyright-footer"><p id="copyrightFooter">📊 Teacher & Student Tracking System - © 2026 Mohamed Reda Awf</p></div>
     <div id="trophyPopup">🏆</div>
 
-    <!-- Edit Student Modal -->
+    <!-- Edit Modal -->
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="editModalTitle">Edit Student Data</h3>
@@ -396,7 +1432,7 @@
                 <span id="editStudentNameDisplay" style="font-weight:bold;"></span>
             </div>
             <div class="modal-field">
-                <label>Status (0-5):</label>
+                <label>State (0-5):</label>
                 <input type="number" id="editState" min="0" max="5" step="1">
             </div>
             <div class="modal-field">
@@ -421,43 +1457,43 @@
                 </select>
             </div>
             <div class="modal-field">
-                <label>Note:</label>
+                <label>Notes:</label>
                 <input type="text" id="editNote" placeholder="Note">
             </div>
             <div class="modal-field">
-                <label>Participation Counter:</label>
+                <label>Participation Count:</label>
                 <input type="number" id="editParticipationCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>Absence Counter:</label>
+                <label>Absence Count:</label>
                 <input type="number" id="editAbsenceCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>Lateness Counter:</label>
+                <label>Lateness Count:</label>
                 <input type="number" id="editLatenessCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>Behavior Counter:</label>
+                <label>Behavior Count:</label>
                 <input type="number" id="editBadBehaviorCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>Talk Counter:</label>
+                <label>Talk Count:</label>
                 <input type="number" id="editTalkCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>No Participation Counter:</label>
+                <label>Not Participate Count:</label>
                 <input type="number" id="editTalkWithoutPermissionCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>No Book Counter:</label>
+                <label>Book Missing Count:</label>
                 <input type="number" id="editBookNotActiveCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>No Notebook Counter:</label>
+                <label>Notebook Missing Count:</label>
                 <input type="number" id="editNotebookNotActiveCounter" min="0" step="1">
             </div>
             <div class="modal-field">
-                <label>No Homework Counter:</label>
+                <label>Homework Missing Count:</label>
                 <input type="number" id="editHomeworkNotActiveCounter" min="0" step="1">
             </div>
             <div class="modal-buttons">
@@ -470,7 +1506,7 @@
     <!-- Admin View Modal -->
     <div id="adminViewModal" class="admin-modal-overlay">
         <div class="admin-modal-content">
-            <h3><i class="fas fa-eye"></i> All Data (Admin)</h3>
+            <h3><i class="fas fa-eye"></i> View All Data (Admin)</h3>
             <div class="admin-filters">
                 <label>Teacher:</label>
                 <select id="adminTeacherFilter"><option value="all">All</option></select>
@@ -488,9 +1524,9 @@
                             <th>Teacher</th><th>Subject</th><th>Class</th><th>Date</th>
                             <th>Student</th><th>Rating</th><th>Attendance</th>
                             <th>Book</th><th>Notebook</th><th>Homework</th>
-                            <th>Notes</th><th>Participation</th><th>Absence</th>
-                            <th>Lateness</th><th>Behavior</th><th>Talking</th>
-                            <th>No Participation</th><th>No Book</th><th>No Notebook</th>
+                            <th>Notes</th><th>Participations</th><th>Absences</th>
+                            <th>Lateness</th><th>Behaviors</th><th>Talking</th>
+                            <th>Not Participate</th><th>No Book</th><th>No Notebook</th>
                             <th>No Homework</th><th>Level</th><th>Progress %</th>
                         </tr>
                     </thead>
@@ -528,28 +1564,31 @@
             console.log("❌ Firebase init error:", error);
         }
 
-        // ===== Global chart variables =====
+        // ===== Global Variables =====
         var teacherChartInstance = null;
         var schoolChartInstance = null;
+        var firebaseListenerRef = null; // Listener reference
 
         document.addEventListener("DOMContentLoaded", function() {
-            // ===== Default data (all in English) =====
+            // ===== Default Data =====
             var defaultTeachers = [
                 { id: 't1', name: "Abdullah Al-Zahrani", subject: "Social Studies", icon: "fa-globe" },
-                { id: 't2', name: "Muadh Al-Sheikh", subject: "Art", icon: "fa-palette" },
-                { id: 't3', name: "Khalid Al-Malki", subject: "Arabic Language", icon: "fa-book" },
+                { id: 't2', name: "Moaz Al-Sheikh", subject: "Art", icon: "fa-palette" },
+                { id: 't3', name: "Khaled Al-Malki", subject: "Arabic Language", icon: "fa-book" },
                 { id: 't4', name: "Mohamed Reda", subject: "My Language", icon: "fa-language" },
-                { id: 't5', name: "Mishal Al-Tuwaijri", subject: "Islamic Education", icon: "fa-moon" },
+                { id: 't5', name: "Mishal Al-Tuwaym", subject: "Islamic Education", icon: "fa-moon" },
                 { id: 't6', name: "Abdulhadi Al-Shahri", subject: "Islamic Education", icon: "fa-moon" },
                 { id: 't7', name: "Abdulrahman Al-Zahrani", subject: "Islamic Education", icon: "fa-moon" }
             ];
 
-            var defaultClasses = ['4B', '4D', '5B', '5D', '6B', '6D', '7B', '7D', '8B', '8D', '9B', '9D', '10B', '10D', '11B', '11D', '12B', '12D'];
+            var defaultClasses = ['4B', '4D', '5B', '5D', '6B', '6D', '7B', '7D', '8B', '8D', '9B', '9D', '10B', '10D', '11B',
+                '11D', '12B', '12D'
+            ];
             var CLASSES_STORAGE_KEY = 'classes_list';
 
-            // ===== Global variables =====
+            // ===== Global Variables =====
             var classesList = JSON.parse(localStorage.getItem(CLASSES_STORAGE_KEY)) || defaultClasses;
-            var currentLang = 'en'; // forced to English
+            var currentLang = 'en'; // Always English
             var currentTeacherId = null;
             var currentClass = null;
             var teachersList = JSON.parse(localStorage.getItem('teachers_list')) || defaultTeachers;
@@ -563,7 +1602,7 @@
             var studentNames = [];
             var selectedStudent = null;
 
-            // ===== DOM elements =====
+            // ===== DOM Elements =====
             var teacherSelect = document.getElementById("teacherSelect");
             var classSelect = document.getElementById("classSelect");
             var teacherCardContainer = document.getElementById("teacherCardContainer");
@@ -634,16 +1673,38 @@
             var editModalSave = document.getElementById('editModalSave');
             var editModalCancel = document.getElementById('editModalCancel');
 
-            // ===== Admin check =====
+            // ===== Admin Check (Modified) =====
             function isAdminUser() {
                 if (!currentUser) return false;
-                var adminEmails = ['a7112119@gmail.com', 'a7112119@gmail.com'];
-                return adminEmails.includes(currentUser.email);
+                return currentUser.email === 'a7112119@gmail.com';
             }
 
-            // ===== Role visibility (English only) =====
+            // ===== Refresh UI (Added) =====
+            function refreshUI() {
+                initStudentsUI();
+                updateTable();
+                updateDateDisplay();
+                renderCalendar();
+                if (currentTeacherId) {
+                    var teacher = teachersList.find(function(t) { return t.id === currentTeacherId; });
+                    if (teacher) {
+                        var iconClass = teacher.icon || getSubjectIcon(teacher.subject);
+                        teacherCardContainer.innerHTML = '<div class="teacher-card"><div class="teacher-icon"><i class="fa-solid ' +
+                            iconClass + '"></i></div><div class="teacher-info"><h3>' + teacher.name +
+                            '</h3><p>Specialization: ' + teacher.subject + '</p></div></div>';
+                    }
+                }
+                if (isAdminUser()) {
+                    renderAdminVisualCharts();
+                }
+                var titleText = classTitleInput.value || (currentTeacherId ? (teachersList.find(function(tch) { return tch.id ===
+                    currentTeacherId; })?.name || "") + ' - ' + (currentClass || "") : "");
+                boardTitleEl.textContent = '📋 Teacher Dashboard - ' + titleText;
+            }
+
+            // ===== Role Visibility (Modified) =====
             function applyRoleVisibility() {
-                var isAdmin = isAdminUser && isAdminUser();
+                var isAdmin = isAdminUser();
 
                 var teacherElements = [
                     document.getElementById('teacherCardContainer'),
@@ -656,7 +1717,7 @@
 
                 if (isAdmin) {
                     teacherElements.forEach(function(el) { if (el) el.style.display = 'none'; });
-                    if (classSelectSection) classSelectSection.style.display = 'none';
+                    if (classSelectSection) classSelectSection.style.display = 'flex';
                     if (chartsSection) chartsSection.style.display = 'block';
                     document.querySelectorAll('.admin-only').forEach(function(btn) {
                         btn.classList.add('show');
@@ -671,44 +1732,46 @@
                     document.querySelectorAll('.admin-only').forEach(function(btn) {
                         btn.classList.remove('show');
                     });
-                    if (teacherChartInstance) { teacherChartInstance.destroy(); teacherChartInstance = null; }
-                    if (schoolChartInstance) { schoolChartInstance.destroy(); schoolChartInstance = null; }
+                    if (teacherChartInstance) { teacherChartInstance.destroy();
+                        teacherChartInstance = null; }
+                    if (schoolChartInstance) { schoolChartInstance.destroy();
+                        schoolChartInstance = null; }
                     var dataContainer = document.getElementById('adminDataContainer');
                     if (dataContainer) dataContainer.style.display = 'none';
                 }
             }
 
-            // ===== Render admin charts =====
+            // ===== Chart Functions (unchanged) =====
             function renderAdminVisualCharts() {
-                if (!isAdminUser || !isAdminUser()) return;
-
+                if (!isAdminUser()) return;
                 var chartsSection = document.getElementById("adminChartsSection");
                 if (chartsSection) chartsSection.style.display = "block";
-
                 var results = getAllLocalStorageData ? getAllLocalStorageData() : [];
                 if (results.length === 0) {
                     var ctxBar = document.getElementById('teacherBarChart');
                     var ctxPie = document.getElementById('schoolPieChart');
                     if (ctxBar) {
                         var parent = ctxBar.parentElement;
-                        parent.innerHTML = '<div style="text-align:center;padding:40px 0;color:#999;">⚠️ Insufficient data for charts</div>';
+                        parent.innerHTML =
+                            '<div style="text-align:center;padding:40px 0;color:#999;">⚠️ No sufficient data to display charts</div>';
                     }
                     if (ctxPie) {
                         var parent2 = ctxPie.parentElement;
-                        parent2.innerHTML = '<div style="text-align:center;padding:40px 0;color:#999;">⚠️ Insufficient data for charts</div>';
+                        parent2.innerHTML =
+                            '<div style="text-align:center;padding:40px 0;color:#999;">⚠️ No sufficient data to display charts</div>';
                     }
                     return;
                 }
-
                 var teacherStats = {};
-                var totalP = 0, totalA = 0, totalB = 0, totalT = 0;
-
+                var totalP = 0,
+                    totalA = 0,
+                    totalB = 0,
+                    totalT = 0;
                 results.forEach(function(r) {
                     totalP += (r.participation || 0);
                     totalA += (r.absence || 0);
                     totalB += (r.behavior || 0);
                     totalT += (r.talking || 0);
-
                     var key = r.teacher;
                     if (!teacherStats[key]) {
                         teacherStats[key] = { name: r.teacher, totalRecords: 0, badActions: 0 };
@@ -716,10 +1779,8 @@
                     teacherStats[key].totalRecords++;
                     teacherStats[key].badActions += ((r.behavior || 0) + (r.talking || 0));
                 });
-
                 var teacherNames = [];
                 var teacherScores = [];
-
                 Object.keys(teacherStats).forEach(function(k) {
                     var g = teacherStats[k];
                     var score = 100 - ((g.badActions / (g.totalRecords || 1)) * 100);
@@ -727,18 +1788,16 @@
                     teacherNames.push(g.name);
                     teacherScores.push(score);
                 });
-
                 var ctxBar = document.getElementById('teacherBarChart');
                 if (!ctxBar) return;
                 var ctxBar2d = ctxBar.getContext('2d');
                 if (teacherChartInstance) { teacherChartInstance.destroy(); }
-
                 teacherChartInstance = new Chart(ctxBar2d, {
                     type: 'bar',
                     data: {
                         labels: teacherNames,
                         datasets: [{
-                            label: 'Activation & Self-Control Rate',
+                            label: 'Teacher Activation & Personal Control Index',
                             data: teacherScores,
                             backgroundColor: 'rgba(139, 92, 246, 0.85)',
                             borderColor: 'rgba(139, 92, 246, 1)',
@@ -766,16 +1825,16 @@
                         }
                     }
                 });
-
                 var ctxPie = document.getElementById('schoolPieChart');
                 if (!ctxPie) return;
                 var ctxPie2d = ctxPie.getContext('2d');
                 if (schoolChartInstance) { schoolChartInstance.destroy(); }
-
                 schoolChartInstance = new Chart(ctxPie2d, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Total Effective Participation', 'Observed Absences', 'Negative Behaviors', 'Talking without Permission'],
+                        labels: ['Total Effective Participations', 'Observed Absences', 'Negative Behavior Violations',
+                            'Talking Without Permission'
+                        ],
                         datasets: [{
                             data: [totalP, totalA, totalB, totalT],
                             backgroundColor: [
@@ -792,7 +1851,8 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 }, padding: 15 } },
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 },
+                                    padding: 15 } },
                             tooltip: { backgroundColor: '#1f2937', padding: 10 }
                         },
                         cutout: '65%'
@@ -800,7 +1860,7 @@
                 });
             }
 
-            // ===== Helper functions =====
+            // ===== Helper Functions =====
             function formattedSelectedDate() {
                 var y = selectedDate.getFullYear();
                 var m = String(selectedDate.getMonth() + 1).padStart(2, '0');
@@ -816,16 +1876,17 @@
                 return 'original_names_' + currentTeacherId + '_' + currentClass;
             }
 
+            // ===== FIREBASE_PATH (Modified - public path without uid) =====
             function FIREBASE_PATH() {
-                if (!currentUser) return null;
-                return 'users/' + currentUser.uid + '/teachers/' + currentTeacherId + '/classes/' + currentClass;
+                return 'teachers/' + currentTeacherId + '/classes/' + currentClass;
             }
 
             function showMessage(message, type) {
                 type = type || 'info';
                 var messageDiv = document.createElement('div');
                 messageDiv.textContent = message;
-                messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; color: white; font-weight: bold; z-index: 10000; box-shadow: 0 3px 10px rgba(0,0,0,0.2); max-width: 400px;';
+                messageDiv.style.cssText =
+                    'position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; color: white; font-weight: bold; z-index: 10000; box-shadow: 0 3px 10px rgba(0,0,0,0.2); max-width: 400px;';
                 if (type === 'success') messageDiv.style.background = '#34a853';
                 else if (type === 'error') messageDiv.style.background = '#ea4335';
                 else if (type === 'warning') messageDiv.style.background = '#d97706';
@@ -836,7 +1897,7 @@
                 }, 4000);
             }
 
-            // ===== Class management =====
+            // ===== Classes functions (unchanged) =====
             function saveClassesList() {
                 localStorage.setItem(CLASSES_STORAGE_KEY, JSON.stringify(classesList));
             }
@@ -911,80 +1972,82 @@
                 }
             }
 
-            // ===== English translations (only) =====
-            var translations = {
-                en: {
-                    boardTitle: "📋 Teacher Tracking Board",
-                    deleteTeacher: "Delete Teacher 🗑️",
-                    deleteStudent: "Delete Student 🗑️",
-                    deleteAllTeachers: "💥 Delete All",
-                    importTeachersLabel: "<i class='fas fa-file-excel'></i> Import Teachers",
-                    confirmDeleteTeacher: "Are you sure you want to delete this teacher?",
-                    confirmDeleteStudent: function(name) { return 'Are you sure you want to delete student: ' + name + '?'; },
-                    confirmDeleteAllTeachers: "Are you sure you want to delete all teachers?",
-                    errorSelectTeacher: "Please select a teacher first",
-                    errorSelectClass: "Please select a class first",
-                    studentAdded: "Student added successfully",
-                    teacherDeleted: "Teacher deleted successfully",
-                    studentDeleted: "Student deleted successfully",
-                    allTeachersDeleted: "All teachers deleted successfully",
-                    newTeacherPlaceholder: "Teacher name...",
-                    newStudentPlaceholder: "Add student manually...",
-                    resetAllConfirm: "Are you sure you want to reset all counters?",
-                    resetAllSuccess: "All counters reset successfully",
-                    resetConfirm: function(name) { return 'Reset all counters for ' + name + '?'; },
-                    msgParticipate: "Good Participation 👋",
-                    msgTalk: "Talking in Class 🗣️",
-                    msgNotParticipate: "Not Participating 😴",
-                    msgBehavior: "Behavior ⚫",
-                    msgLateness: "Lateness ⏰",
-                    msgAbsent: "Absence ❌",
-                    msgResetState: "Status Reset 🔄",
-                    msgResetCounters: "Counters Reset 📊",
-                    attendanceText: ["Present", "Absent"],
-                    states: [
-                        { color: "#7c3aed", label: "Student Points", stars: 5 },
-                        { color: "#22c55e", label: "Good Participation", stars: 5 },
-                        { color: "#f59e0b", label: "Talking in Class", stars: 3 },
-                        { color: "#6366f1", label: "Not Participating", stars: 2 },
-                        { color: "#000000", label: "Behavior", stars: 1 },
-                        { color: "#ef4444", label: "Absence", stars: 0 }
-                    ],
-                    levels: ["Low", "Good", "Very Good", "Excellent", "Talented", "Genius"],
-                    notesOptions: ["", "Leaves seat", "Throws paper", "Doesn't write", "Eats in class", "Talks too much", "Bullies", "Needs monitoring", "Excellent", "Other"],
-                    notBringingBook: "Not bringing book 📗",
-                    notBringingNotebook: "Not bringing notebook 📒",
-                    notDoingHomework: "Not doing homework 📘",
-                    quickActions: {
-                        participate: "Good Participation 👋",
-                        talk: "Talking in Class 🗣️",
-                        notParticipating: "Not Participating 😴",
-                        behavior: "Behavior ⚫",
-                        lateness: "Lateness ⏰",
-                        absent: "Absence ❌",
-                        resetState: "Reset State 🔄",
-                        resetCounters: "Reset all counters 📊"
-                    },
-                    firebase: {
-                        online: "Connected to Cloud ☁️",
-                        offline: "Local Storage 💾",
-                        syncSuccess: "Successfully synced",
-                        syncError: "Sync error",
-                        loginSuccess: "Login successful",
-                        logoutSuccess: "Logout successful",
-                        registerSuccess: "Account created",
-                        authError: "Auth error",
-                        storageLocal: "Local storage active",
-                        storageCloud: "Cloud storage active"
-                    },
-                    calendar: {
-                        days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-                        months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-                    }
+            // ===== Translation object (English) =====
+            var t = {
+                boardTitle: "📋 Teacher Dashboard",
+                deleteTeacher: "Delete Teacher 🗑️",
+                deleteStudent: "Delete Student 🗑️",
+                deleteAllTeachers: "💥 Delete All",
+                importTeachersLabel: "<i class='fas fa-file-excel'></i> Import Teachers",
+                confirmDeleteTeacher: "Are you sure you want to delete the current teacher?",
+                confirmDeleteStudent: function(name) { return 'Are you sure you want to delete student: ' + name + '?'; },
+                confirmDeleteAllTeachers: "Are you sure you want to delete all teachers?",
+                errorSelectTeacher: "Please select a teacher first",
+                errorSelectClass: "Please select a class first",
+                studentAdded: "Student added successfully",
+                teacherDeleted: "Teacher deleted successfully",
+                studentDeleted: "Student deleted successfully",
+                allTeachersDeleted: "All teachers deleted successfully",
+                newTeacherPlaceholder: "Teacher name...",
+                newStudentPlaceholder: "Add student manually...",
+                resetAllConfirm: "Are you sure you want to reset all counters to zero?",
+                resetAllSuccess: "All counters reset successfully",
+                resetConfirm: function(name) { return 'Do you want to reset all counters for ' + name + '?'; },
+                msgParticipate: "Good Participation 👋",
+                msgTalk: "Talks in class 🗣️",
+                msgNotParticipate: "Does not participate 😴",
+                msgBehavior: "Behavior ⚫",
+                msgLateness: "Late to class ⏰",
+                msgAbsent: "Absent ❌",
+                msgResetState: "State reset 🔄",
+                msgResetCounters: "All counters reset 📊",
+                attendanceText: ["Present", "Absent"],
+                states: [
+                    { color: "#7c3aed", label: "Student Points", stars: 5 },
+                    { color: "#22c55e", label: "Good Participation", stars: 5 },
+                    { color: "#f59e0b", label: "Talks in Class", stars: 3 },
+                    { color: "#6366f1", label: "Does Not Participate", stars: 2 },
+                    { color: "#000000", label: "Behavior", stars: 1 },
+                    { color: "#ef4444", label: "Absent", stars: 0 }
+                ],
+                levels: ["Low", "Good", "Excellent", "Advanced", "Talented", "Genius"],
+                notesOptions: ["", "Stands up", "Throws paper", "Does not write", "Eats in class", "Talks a lot",
+                    "Bullying", "Needs follow-up", "Excellent", "Other"
+                ],
+                notBringingBook: "Book missing 📗",
+                notBringingNotebook: "Notebook missing 📒",
+                notDoingHomework: "Homework missing 📘",
+                quickActions: {
+                    participate: "Good Participation 👋",
+                    talk: "Talks in class 🗣️",
+                    notParticipating: "Does not participate 😴",
+                    behavior: "Behavior ⚫",
+                    lateness: "Late ⏰",
+                    absent: "Absent ❌",
+                    resetState: "Reset state 🔄",
+                    resetCounters: "Reset all counters 📊"
+                },
+                firebase: {
+                    online: "Online ☁️",
+                    offline: "Local Storage 💾",
+                    syncSuccess: "Sync completed successfully",
+                    syncError: "Sync error",
+                    loginSuccess: "Login successful",
+                    logoutSuccess: "Logout successful",
+                    registerSuccess: "Account created",
+                    authError: "Authentication error",
+                    storageLocal: "Local storage enabled",
+                    storageCloud: "Cloud storage enabled"
+                },
+                calendar: {
+                    days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                    months: ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+                        "October", "November", "December"
+                    ]
                 }
             };
 
-            // ===== Translation utilities =====
+            // ===== Utility functions (unchanged) =====
             function getSubjectIcon(subject) {
                 var map = {
                     'Social Studies': 'fa-globe',
@@ -998,112 +2061,54 @@
                 return map[subject] || 'fa-chalkboard-user';
             }
 
-            // Transliteration function (for Arabic names entered, convert to English)
-            function arabicToEnglishTransliteration(arabicName) {
-                if (!arabicName || arabicName.trim() === '') return arabicName;
-                var trimmedName = arabicName.trim();
-                var hasArabic = /[\u0600-\u06FF]/.test(trimmedName);
-                var hasEnglish = /[A-Za-z]/.test(trimmedName);
-                if (!hasArabic && hasEnglish) return trimmedName;
-                var parts = trimmedName.split(/\s+/);
-                var translatedParts = parts.map(function(part) {
-                    part = part.trim();
-                    if (!part) return '';
-                    if (!/[\u0600-\u06FF]/.test(part)) return part;
-                    var charMap = { 'ا': 'a', 'أ': 'a', 'إ': 'e', 'آ': 'aa', 'ء': '', 'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z', 'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'q', 'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n', 'ه': 'h', 'و': 'w', 'ؤ': 'w', 'ي': 'y', 'ى': 'a', 'ئ': 'e', 'ة': 'h' };
-                    var specialWords = { 'عبدالله': 'Abdullah', 'عبد الله': 'Abdullah', 'عبدالرحمن': 'Abdulrahman', 'عبد الرحمن': 'Abdulrahman' };
-                    if (specialWords[part]) return specialWords[part];
-                    if (part.startsWith('ال') && part.length > 2) {
-                        var withoutAl = part.substring(2);
-                        return 'Al-' + transliterateWord(withoutAl, charMap);
-                    }
-                    if (part.startsWith('عبد') && part.length > 3) {
-                        var remaining = part.substring(3);
-                        var abdSpecialCases = { 'الله': 'Allah', 'الرحمن': 'Rahman', 'العزيز': 'Aziz', 'الهادي': 'Hadi' };
-                        if (abdSpecialCases[remaining]) return 'Abdul' + abdSpecialCases[remaining];
-                        return 'Abdul' + transliterateWord(remaining, charMap);
-                    }
-                    return transliterateWord(part, charMap);
-                }).filter(function(part) { return part !== ''; });
-                return translatedParts.map(function(part) {
-                    if (part && /^[a-z]/.test(part)) return part.charAt(0).toUpperCase() + part.slice(1);
-                    return part;
-                }).join(' ');
-            }
-
-            function transliterateWord(word, charMap) {
-                var result = '';
-                for (var i = 0; i < word.length; i++) {
-                    var char = word[i];
-                    var nextChar = i < word.length - 1 ? word[i + 1] : '';
-                    if (i < word.length - 1) {
-                        var twoChars = char + nextChar;
-                        if (charMap[twoChars]) {
-                            result += charMap[twoChars];
-                            i++;
-                            continue;
-                        }
-                    }
-                    if (charMap[char] !== undefined) result += charMap[char];
-                    else result += char;
-                }
-                result = result.replace(/aa+/g, 'a');
-                result = result.replace(/'+/g, "'");
-                result = result.replace(/\s+/g, ' ').trim();
-                return result;
-            }
-
-            function arabicToEnglishNames(namesArray) {
-                return namesArray.map(function(name) { return arabicToEnglishTransliteration(name); });
-            }
-
             function getDynamicStatus(type, count) {
                 count = parseInt(count) || 0;
                 var text = "";
                 var styleClass = "text-neutral";
                 if (type === 'participation') {
-                    if (count >= 15) { text = "🏆 Weekly Star"; styleClass = "text-gift"; }
-                    else if (count >= 12) { text = "🎁 Choose a Question"; styleClass = "text-gift"; }
-                    else if (count >= 9) { text = "👑 Class Leader"; styleClass = "text-gift"; }
-                    else if (count >= 6) { text = "🏅 Choose a Game"; styleClass = "text-gift"; }
-                    else if (count >= 3) { text = "⭐ Champion Point"; styleClass = "text-gift"; }
-                    else { text = "Active"; styleClass = "text-neutral"; }
-                }
-                else if (type === 'talking') {
-                    if (count >= 8) { text = "🔴 Admin Follow-up"; styleClass = "text-danger"; }
-                    else if (count >= 6) { text = "📝 Write Commitment"; styleClass = "text-danger"; }
-                    else if (count >= 4) { text = "🔁 Change Seat"; styleClass = "text-warn"; }
-                    else if (count >= 2) { text = "⚠ Verbal Warning"; styleClass = "text-warn"; }
-                    else { text = "Talk"; styleClass = "text-neutral"; }
-                }
-                else if (type === 'absence') {
-                    if (count === 0) { text = "⭐ Discipline Star"; styleClass = "text-gift"; }
-                    else if (count >= 7) { text = "Admin Follow-up"; styleClass = "text-danger"; }
-                    else if (count >= 5) { text = "Notify Guardian"; styleClass = "text-danger"; }
-                    else if (count >= 3) { text = "Note"; styleClass = "text-warn"; }
-                    else if (count >= 1) { text = "Warning"; styleClass = "text-warn"; }
-                    else { text = "Present"; styleClass = "text-neutral"; }
-                }
-                else if (['book', 'notebook', 'homework'].includes(type)) {
-                    if (count >= 8) { text = "Admin Follow-up"; styleClass = "text-danger"; }
-                    else if (count >= 6) { text = "Notify Guardian"; styleClass = "text-danger"; }
-                    else if (count >= 4) { text = "Note"; styleClass = "text-warn"; }
-                    else if (count >= 2) { text = "Warning"; styleClass = "text-warn"; }
-                    else { text = "Ready"; styleClass = "text-gift"; }
-                }
-                else if (type === 'lateness') {
-                    if (count >= 5) { text = "🔴 Denied from Class"; styleClass = "text-danger"; }
-                    else if (count >= 3) { text = "📞 Notify Guardian"; styleClass = "text-warn"; }
-                    else if (count >= 1) { text = "⏰ Late Note"; styleClass = "text-warn"; }
-                    else { text = "On Time"; styleClass = "text-gift"; }
-                }
-                else if (type === 'behavior') {
-                    if (count >= 12) { text = "🔴 Refer to Admin"; styleClass = "text-danger"; }
-                    else if (count >= 9) { text = "📞 Notify Guardian"; styleClass = "text-danger"; }
-                    else if (count >= 7) { text = "📝 Write Apology"; styleClass = "text-warn"; }
-                    else if (count >= 5) { text = "Change Seat"; styleClass = "text-warn"; }
-                    else if (count >= 3) { text = "Warning"; styleClass = "text-warn"; }
-                    else { text = "Behavior"; styleClass = "text-neutral"; }
+                    if (count >= 15) { text = "🏆 Star of the Week";
+                        styleClass = "text-gift"; } else if (count >= 12) { text = "🎁 Choose a Question";
+                        styleClass = "text-gift"; } else if (count >= 9) { text = "👑 Class Leader";
+                        styleClass = "text-gift"; } else if (count >= 6) { text = "🏅 Choose a Game";
+                        styleClass = "text-gift"; } else if (count >= 3) { text = "⭐ Champion Point";
+                        styleClass = "text-gift"; } else { text = "Active";
+                        styleClass = "text-neutral"; }
+                } else if (type === 'talking') {
+                    if (count >= 8) { text = "🔴 Administrative Follow-up";
+                        styleClass = "text-danger"; } else if (count >= 6) { text = "📝 Write a Pledge";
+                        styleClass = "text-danger"; } else if (count >= 4) { text = "🔁 Change Seat";
+                        styleClass = "text-warn"; } else if (count >= 2) { text = "⚠ Verbal Warning";
+                        styleClass = "text-warn"; } else { text = "Talked";
+                        styleClass = "text-neutral"; }
+                } else if (type === 'absence') {
+                    if (count === 0) { text = "⭐ Discipline Star";
+                        styleClass = "text-gift"; } else if (count >= 7) { text = "Administrative Follow-up";
+                        styleClass = "text-danger"; } else if (count >= 5) { text = "Parent Notification";
+                        styleClass = "text-danger"; } else if (count >= 3) { text = "Note";
+                        styleClass = "text-warn"; } else if (count >= 1) { text = "Warning";
+                        styleClass = "text-warn"; } else { text = "Present";
+                        styleClass = "text-neutral"; }
+                } else if (['book', 'notebook', 'homework'].includes(type)) {
+                    if (count >= 8) { text = "Administrative Follow-up";
+                        styleClass = "text-danger"; } else if (count >= 6) { text = "Parent Notification";
+                        styleClass = "text-danger"; } else if (count >= 4) { text = "Note";
+                        styleClass = "text-warn"; } else if (count >= 2) { text = "Warning";
+                        styleClass = "text-warn"; } else { text = "Ready";
+                        styleClass = "text-gift"; }
+                } else if (type === 'lateness') {
+                    if (count >= 5) { text = "🔴 Excluded from Class";
+                        styleClass = "text-danger"; } else if (count >= 3) { text = "📞 Parent Notification";
+                        styleClass = "text-warn"; } else if (count >= 1) { text = "⏰ Late Note";
+                        styleClass = "text-warn"; } else { text = "On Time";
+                        styleClass = "text-gift"; }
+                } else if (type === 'behavior') {
+                    if (count >= 12) { text = "🔴 Refer to Admin";
+                        styleClass = "text-danger"; } else if (count >= 9) { text = "📞 Parent Notification";
+                        styleClass = "text-danger"; } else if (count >= 7) { text = "📝 Write Apology";
+                        styleClass = "text-warn"; } else if (count >= 5) { text = "Change Seat";
+                        styleClass = "text-warn"; } else if (count >= 3) { text = "Warning";
+                        styleClass = "text-warn"; } else { text = "Behavior";
+                        styleClass = "text-neutral"; }
                 }
                 return { text: text, class: styleClass, count: count };
             }
@@ -1128,11 +2133,11 @@
                 allHistoryData[dateKey] = data;
             }
 
-            // ===== Calendar =====
+            // ===== Calendar Functions (unchanged) =====
             function renderCalendar() {
                 calendarGrid.innerHTML = "";
-                var t = translations[currentLang].calendar;
-                t.days.forEach(function(day) {
+                var cal = t.calendar;
+                cal.days.forEach(function(day) {
                     var dayHeader = document.createElement("div");
                     dayHeader.className = "calendar-day-name";
                     dayHeader.textContent = day;
@@ -1140,7 +2145,7 @@
                 });
                 var year = calendarDate.getFullYear();
                 var month = calendarDate.getMonth();
-                calendarTitle.textContent = t.months[month] + ' ' + year;
+                calendarTitle.textContent = cal.months[month] + ' ' + year;
                 var firstDayIndex = new Date(year, month, 1).getDay();
                 var lastDay = new Date(year, month + 1, 0).getDate();
                 var selectedStr = formattedSelectedDate();
@@ -1155,7 +2160,8 @@
                     dayCell.textContent = j;
                     var cellDateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(j).padStart(2, '0');
                     var now = new Date();
-                    var nowStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+                    var nowStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now
+                        .getDate()).padStart(2, '0');
                     if (cellDateStr === nowStr) dayCell.classList.add("today");
                     if (cellDateStr === selectedStr) dayCell.classList.add("active");
                     dayCell.addEventListener("click", (function(year, month, j) {
@@ -1170,10 +2176,10 @@
                             var newDateKey = formattedSelectedDate();
                             if (allHistoryData[newDateKey]) {
                                 data = allHistoryData[newDateKey];
-                                showMessage('Loaded data: ' + newDateKey, 'info');
+                                showMessage('Loaded data for: ' + newDateKey, 'info');
                             } else {
                                 data = {};
-                                showMessage('New Day: ' + newDateKey + ' (Data reset to 0)', 'info');
+                                showMessage('New day: ' + newDateKey + ' (data reset)', 'info');
                             }
                             ensureAllStudentsInData();
                             localStorage.setItem(STORAGE_KEY_DATA(), JSON.stringify(allHistoryData));
@@ -1188,10 +2194,8 @@
                 }
             }
 
-            // ===== Firebase =====
+            // ===== Firebase Functions =====
             function updateFirebaseUI() {
-                var t = translations[currentLang];
-
                 if (currentUser) {
                     var email = currentUser.email || t.firebase.offline;
                     firebaseStatus.innerHTML = '<i class="fas fa-user"></i> ' + email.substring(0, 20);
@@ -1232,21 +2236,56 @@
                 applyRoleVisibility();
             }
 
+            // ===== Real-time listener (Added) =====
+            function listenToFirebase() {
+                if (firebaseListenerRef) {
+                    firebaseListenerRef.off();
+                    firebaseListenerRef = null;
+                }
+
+                if (!isFirebaseInitialized || !currentUser || storageMode !== 'cloud') return;
+                if (!currentTeacherId || !currentClass) return;
+
+                var path = FIREBASE_PATH();
+                if (!path) return;
+
+                firebaseListenerRef = firebaseDb.ref(path);
+                firebaseListenerRef.on('value', function(snapshot) {
+                    var firebaseData = snapshot.val();
+                    if (firebaseData) {
+                        console.log('🔄 Real-time update received from Firebase');
+                        if (firebaseData.datesData) {
+                            allHistoryData = firebaseData.datesData;
+                            localStorage.setItem(STORAGE_KEY_DATA(), JSON.stringify(allHistoryData));
+                        }
+                        if (firebaseData.originalStudentNames) {
+                            originalStudentNames = firebaseData.originalStudentNames;
+                            localStorage.setItem(STORAGE_KEY_ORIGINAL_NAMES(), JSON.stringify(originalStudentNames));
+                        }
+                        refreshUI();
+                    }
+                }, function(error) {
+                    console.error('❌ Listener error:', error);
+                });
+            }
+
+            // ===== Storage Mode (Modified) =====
             function setStorageMode(mode) {
                 storageMode = mode;
                 localStorage.setItem('storage_mode', mode);
-                var t = translations[currentLang];
                 if (mode === 'cloud' && !currentUser) {
                     showMessage(t.firebase.authError, 'error');
                     showLoginForm();
                     return;
                 }
                 updateFirebaseUI();
-                if (currentTeacherId && currentClass) loadData();
+                if (currentTeacherId && currentClass) {
+                    loadData();
+                }
                 showMessage(mode === 'local' ? t.firebase.storageLocal : t.firebase.storageCloud, 'success');
             }
 
-            // ===== Login =====
+            // ===== Login Functions =====
             function showLoginForm() {
                 loginForm.classList.add('show');
                 loginMessage.textContent = '';
@@ -1303,7 +2342,7 @@
 
                     switch (error.code) {
                         case 'auth/user-not-found':
-                            errorMsg = "⚠️ User not found. Please register first";
+                            errorMsg = "⚠️ User not found. Please register first.";
                             break;
                         case 'auth/wrong-password':
                             errorMsg = "⚠️ Incorrect password";
@@ -1315,10 +2354,10 @@
                             errorMsg = "⚠️ Account disabled";
                             break;
                         case 'auth/too-many-requests':
-                            errorMsg = "⚠️ Too many attempts. Try later";
+                            errorMsg = "⚠️ Too many attempts. Try later.";
                             break;
                         case 'auth/network-request-failed':
-                            errorMsg = "⚠️ Network issue. Check your connection";
+                            errorMsg = "⚠️ Network issue. Check your connection.";
                             break;
                         default:
                             errorMsg = '❌ ' + error.message;
@@ -1359,7 +2398,7 @@
                         createdAt: new Date().toISOString()
                     });
 
-                    loginMessage.textContent = '✅ Account created successfully!';
+                    loginMessage.textContent = '✅ Account created!';
                     loginMessage.style.color = '#34a853';
 
                     showMessage("✅ Account created successfully!", 'success');
@@ -1386,13 +2425,13 @@
                             errorMsg = "⚠️ Invalid email";
                             break;
                         case 'auth/operation-not-allowed':
-                            errorMsg = "⚠️ Email login not enabled in Firebase";
+                            errorMsg = "⚠️ Email/password sign-in not enabled in Firebase";
                             break;
                         case 'auth/weak-password':
-                            errorMsg = "⚠️ Password too weak (minimum 6 characters)";
+                            errorMsg = "⚠️ Password too weak (min 6 chars)";
                             break;
                         case 'auth/network-request-failed':
-                            errorMsg = "⚠️ Network issue. Check your connection";
+                            errorMsg = "⚠️ Network issue. Check your connection.";
                             break;
                         default:
                             errorMsg = '❌ ' + error.message;
@@ -1404,7 +2443,7 @@
             }
 
             async function loginAnonymously() {
-                loginMessage.textContent = '⏳ Logging in anonymously...';
+                loginMessage.textContent = '⏳ Logging in as anonymous...';
                 loginMessage.style.color = '#4285f4';
 
                 try {
@@ -1417,10 +2456,10 @@
                         createdAt: new Date().toISOString()
                     });
 
-                    loginMessage.textContent = '✅ Logged in anonymously';
+                    loginMessage.textContent = '✅ Logged in as anonymous';
                     loginMessage.style.color = '#34a853';
 
-                    showMessage("✅ Logged in anonymously", 'success');
+                    showMessage("✅ Logged in as anonymous", 'success');
 
                     setTimeout(function() {
                         hideLoginForm();
@@ -1439,11 +2478,17 @@
                 }
             }
 
+            // ===== Logout (Modified) =====
             async function logout() {
+                if (firebaseListenerRef) {
+                    firebaseListenerRef.off();
+                    firebaseListenerRef = null;
+                }
+
                 try {
                     await firebaseAuth.signOut();
                     currentUser = null;
-                    showMessage(translations[currentLang].firebase.logoutSuccess, 'success');
+                    showMessage(t.firebase.logoutSuccess, 'success');
                     updateFirebaseUI();
                     applyRoleVisibility();
                     allHistoryData = {};
@@ -1452,10 +2497,13 @@
                     studentNames = [];
                     initStudentsUI();
                     updateTable();
-                    if (teacherChartInstance) { teacherChartInstance.destroy(); teacherChartInstance = null; }
-                    if (schoolChartInstance) { schoolChartInstance.destroy(); schoolChartInstance = null; }
+                    if (teacherChartInstance) { teacherChartInstance.destroy();
+                        teacherChartInstance = null; }
+                    if (schoolChartInstance) { schoolChartInstance.destroy();
+                        schoolChartInstance = null; }
                     var dataContainer = document.getElementById('adminDataContainer');
                     if (dataContainer) dataContainer.style.display = 'none';
+                    showLoginForm();
                 } catch (error) {
                     console.error("❌ Logout error:", error);
                     showMessage('❌ Error: ' + error.message, 'error');
@@ -1467,7 +2515,6 @@
                     showMessage("Please enable cloud mode and login first", 'error');
                     return;
                 }
-                var t = translations[currentLang];
                 var saved = await saveAll(true);
                 if (saved) showMessage(t.firebase.syncSuccess, 'success');
             }
@@ -1503,7 +2550,7 @@
                 });
             }
 
-            // ===== Teacher & student =====
+            // ===== Teacher & Student Functions =====
             function initTeacherSelect() {
                 teacherSelect.innerHTML = '<option value="" disabled selected>-- Select Teacher --</option>';
                 teachersList.forEach(function(teacher) {
@@ -1515,19 +2562,30 @@
             }
 
             function selectTeacher(teacherId) {
+                if (firebaseListenerRef) {
+                    firebaseListenerRef.off();
+                    firebaseListenerRef = null;
+                }
                 currentTeacherId = teacherId;
                 var teacher = teachersList.find(function(t) { return t.id === teacherId; });
                 if (!teacher) return;
                 var iconClass = teacher.icon || getSubjectIcon(teacher.subject);
-                teacherCardContainer.innerHTML = '<div class="teacher-card"><div class="teacher-icon"><i class="fa-solid ' + iconClass + '"></i></div><div class="teacher-info"><h3>' + teacher.name + '</h3><p>Subject: ' + teacher.subject + '</p></div></div>';
+                teacherCardContainer.innerHTML = '<div class="teacher-card"><div class="teacher-icon"><i class="fa-solid ' +
+                    iconClass + '"></i></div><div class="teacher-info"><h3>' + teacher.name +
+                    '</h3><p>Specialization: ' + teacher.subject + '</p></div></div>';
                 if (currentClass) loadData();
             }
 
             function selectClass(classId) {
+                if (firebaseListenerRef) {
+                    firebaseListenerRef.off();
+                    firebaseListenerRef = null;
+                }
                 currentClass = classId;
                 if (currentTeacherId) loadData();
             }
 
+            // ===== Load Data (Modified) =====
             async function loadData() {
                 if (!currentTeacherId || !currentClass) return;
                 var loaded = false;
@@ -1535,12 +2593,12 @@
                     loaded = await loadFromFirebase();
                     if (loaded) {
                         console.log("✅ Data loaded from Firebase");
+                        listenToFirebase();
                     }
                 }
                 if (!loaded) loadDataFromLocalStorage();
                 updateDisplayNames();
                 ensureAllStudentsInData();
-                applyLanguage(currentLang);
                 updateDateDisplay();
                 initStudentsUI();
                 updateTable();
@@ -1554,7 +2612,8 @@
                 allHistoryData = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA())) || {};
                 originalStudentNames = JSON.parse(localStorage.getItem(STORAGE_KEY_ORIGINAL_NAMES())) || [];
                 if (originalStudentNames.length === 0) {
-                    var oldNames = JSON.parse(localStorage.getItem('tracking_names_' + currentTeacherId + '_' + currentClass)) || [];
+                    var oldNames = JSON.parse(localStorage.getItem('tracking_names_' + currentTeacherId + '_' +
+                    currentClass)) || [];
                     originalStudentNames = oldNames.slice();
                     localStorage.setItem(STORAGE_KEY_ORIGINAL_NAMES(), JSON.stringify(originalStudentNames));
                 }
@@ -1566,8 +2625,7 @@
                     studentNames = [];
                     return;
                 }
-                // Always convert to English transliteration
-                studentNames = arabicToEnglishNames(originalStudentNames);
+                studentNames = originalStudentNames.slice();
             }
 
             function updateDateDisplay() {
@@ -1575,6 +2633,7 @@
                 currentDateDisplayEl.textContent = dateStr;
             }
 
+            // ===== Save Functions (Modified) =====
             async function saveAll(showMsg) {
                 showMsg = showMsg || true;
                 if (!currentTeacherId || !currentClass) return;
@@ -1585,6 +2644,7 @@
                 if (storageMode === 'cloud' && currentUser) await saveToFirebase();
             }
 
+            // ===== Save to Firebase (Modified) =====
             async function saveToFirebase() {
                 if (!isFirebaseInitialized || !currentUser || storageMode !== 'cloud') return;
                 if (!currentTeacherId || !currentClass) return;
@@ -1608,11 +2668,12 @@
                     return true;
                 } catch (error) {
                     console.error("❌ Error saving to Firebase:", error);
-                    showMessage(translations[currentLang].firebase.syncError, 'error');
+                    showMessage(t.firebase.syncError, 'error');
                     return false;
                 }
             }
 
+            // ===== Load from Firebase (Modified) =====
             async function loadFromFirebase() {
                 if (!isFirebaseInitialized || !currentUser || storageMode !== 'cloud') return false;
                 if (!currentTeacherId || !currentClass) return false;
@@ -1632,9 +2693,8 @@
                         }
                         if (firebaseData.boardTitle) {
                             boardTitleEl.textContent = firebaseData.boardTitle;
-                            classTitleInput.value = firebaseData.boardTitle.replace(translations[currentLang].boardTitle + " - ", "");
+                            classTitleInput.value = firebaseData.boardTitle.replace("📋 Teacher Dashboard - ", "");
                         }
-
                         if (firebaseData.teacherSubject) {
                             var teacher = teachersList.find(function(t) { return t.id === currentTeacherId; });
                             if (teacher) {
@@ -1643,7 +2703,6 @@
                                 console.log("✅ Updated teacher subject to:", firebaseData.teacherSubject);
                             }
                         }
-
                         console.log("✅ Loaded from Firebase with subject:", firebaseData.teacherSubject);
                         loadDataFromLocalStorage();
                         return true;
@@ -1651,7 +2710,7 @@
                     return false;
                 } catch (error) {
                     console.error("❌ Error loading from Firebase:", error);
-                    showMessage(translations[currentLang].firebase.syncError, 'error');
+                    showMessage(t.firebase.syncError, 'error');
                     return false;
                 }
             }
@@ -1660,7 +2719,7 @@
                 localStorage.setItem('teachers_list', JSON.stringify(teachersList));
             }
 
-            // ===== Login event bindings =====
+            // ===== Event Listeners for Login =====
             if (loginBtn) {
                 loginBtn.addEventListener('click', function() {
                     if (currentUser) {
@@ -1687,7 +2746,7 @@
                 cancelLogin.addEventListener('click', hideLoginForm);
             }
 
-            // ===== Storage buttons =====
+            // ===== Storage Buttons =====
             if (useLocalBtn) {
                 useLocalBtn.addEventListener('click', function() {
                     setStorageMode('local');
@@ -1704,7 +2763,8 @@
                 syncDataBtn.addEventListener('click', syncData);
             }
 
-            // ===== Clear all data =====
+            // ===== Admin Buttons (unchanged) =====
+            // Clear All Data
             if (clearAllDataBtn) {
                 clearAllDataBtn.addEventListener('click', async function() {
                     if (!currentUser) {
@@ -1712,17 +2772,22 @@
                         return;
                     }
                     if (!isAdminUser()) {
-                        showMessage('⚠️ Admin only', 'error');
+                        showMessage('⚠️ Admin access only', 'error');
                         return;
                     }
 
-                    var confirmDelete = confirm('🔥 WARNING: Are you sure you want to delete ALL data?\n\nThis will delete:\n- All users (except admin)\n- All teachers\n- All classes\n- All students\n- All emails\n\nThis action cannot be undone!');
+                    var confirmDelete = confirm(
+                        '🔥 WARNING: Are you sure you want to delete ALL data?\n\nThis will delete:\n- All users (except admin)\n- All teachers\n- All classes\n- All students\n- All emails\n\nThis action cannot be undone!'
+                        );
                     if (!confirmDelete) return;
 
-                    var confirmDelete2 = confirm('⚠️ Final confirmation: Are you sure you want to delete ALL data?\nThis is irreversible!');
+                    var confirmDelete2 = confirm(
+                        '⚠️ Final confirmation: Are you sure you want to delete ALL data?\nThis action is irreversible!'
+                        );
                     if (!confirmDelete2) return;
 
-                    var confirmDelete3 = prompt('⚠️ To confirm, type "DELETE" in the box below:');
+                    var confirmDelete3 = prompt(
+                        '⚠️ To confirm, type "DELETE" in the box below:');
                     if (confirmDelete3 !== 'DELETE') {
                         showMessage('❌ Deletion cancelled', 'error');
                         return;
@@ -1773,9 +2838,10 @@
                         updateClassSelect();
                         initStudentsUI();
                         updateTable();
-                        boardTitleEl.textContent = translations[currentLang].boardTitle;
+                        boardTitleEl.textContent = "📋 Teacher Dashboard";
 
-                        showMessage('✅ All data deleted successfully!\nOnly admin (a7112119@gmail.com) kept', 'success');
+                        showMessage('✅ All data deleted successfully!\nOnly admin (a7112119@gmail.com) was kept.',
+                            'success');
 
                         setTimeout(function() {
                             location.reload();
@@ -1788,7 +2854,7 @@
                 });
             }
 
-            // ===== Fix emails =====
+            // Fix Emails
             if (fixEmailsBtn) {
                 fixEmailsBtn.addEventListener('click', async function() {
                     if (!currentUser) {
@@ -1796,7 +2862,7 @@
                         return;
                     }
                     if (!isAdminUser()) {
-                        showMessage('⚠️ Admin only', 'error');
+                        showMessage('⚠️ Admin access only', 'error');
                         return;
                     }
                     showMessage('⏳ Fixing emails...', 'info');
@@ -1820,7 +2886,8 @@
                         if (usersWithoutEmail.length > 0) {
                             for (var i = 0; i < usersWithoutEmail.length; i++) {
                                 var uid2 = usersWithoutEmail[i];
-                                var email = prompt('📧 Enter email for user (UID: ' + uid2.substring(0, 12) + '...):');
+                                var email = prompt('📧 Enter email for user (UID: ' + uid2.substring(0, 12) +
+                                    '...):');
                                 if (email && email.trim()) {
                                     await firebaseDb.ref('users/' + uid2 + '/profile/email').set(email.trim());
                                     fixedCount++;
@@ -1830,7 +2897,7 @@
                         }
                         var resultMessage = '✅ Fixed ' + fixedCount + ' email(s)';
                         if (fixedCount === 0) {
-                            resultMessage = '✅ All users have valid emails.';
+                            resultMessage = '✅ All users already have valid emails.';
                         }
                         showMessage(resultMessage, 'success');
                         setTimeout(function() {
@@ -1843,7 +2910,7 @@
                 });
             }
 
-            // ===== Delete all users =====
+            // Delete All Users
             if (deleteAllUsersBtn) {
                 deleteAllUsersBtn.addEventListener('click', async function() {
                     if (!currentUser) {
@@ -1851,14 +2918,18 @@
                         return;
                     }
                     if (!isAdminUser()) {
-                        showMessage('⚠️ Admin only', 'error');
+                        showMessage('⚠️ Admin access only', 'error');
                         return;
                     }
 
-                    var confirmDelete = confirm('⚠️ Are you sure you want to delete all users except admin (a7112119@gmail.com)?\n\nAll user data will be permanently deleted!');
+                    var confirmDelete = confirm(
+                        '⚠️ WARNING: Are you sure you want to delete all users except admin (a7112119@gmail.com)?\n\nThis will permanently delete all user data!'
+                        );
                     if (!confirmDelete) return;
 
-                    var confirmDelete2 = confirm('⚠️ Final confirmation: Delete all users except admin?\nThis is irreversible!');
+                    var confirmDelete2 = confirm(
+                        '⚠️ Final confirmation: Are you sure you want to delete all users except admin?\nThis action is irreversible!'
+                        );
                     if (!confirmDelete2) return;
 
                     showMessage('⏳ Deleting all users except admin...', 'info');
@@ -1884,7 +2955,8 @@
                             console.log('🗑️ Deleted user:', userEmail || uid);
                         }
 
-                        showMessage('✅ Deleted ' + deletedCount + ' users, kept ' + keptCount + ' user (admin)', 'success');
+                        showMessage('✅ Deleted ' + deletedCount + ' users, kept ' + keptCount +
+                            ' user (admin)', 'success');
 
                         setTimeout(function() {
                             location.reload();
@@ -1897,7 +2969,7 @@
                 });
             }
 
-            // ===== Update teachers' subjects =====
+            // Update Teacher Subjects
             if (updateSubjectBtn) {
                 updateSubjectBtn.addEventListener('click', async function() {
                     if (!currentUser) {
@@ -1905,11 +2977,11 @@
                         return;
                     }
                     if (!isAdminUser()) {
-                        showMessage('⚠️ Admin only', 'error');
+                        showMessage('⚠️ Admin access only', 'error');
                         return;
                     }
 
-                    showMessage('⏳ Updating teachers\' subjects...', 'info');
+                    showMessage('⏳ Updating teacher subjects...', 'info');
 
                     try {
                         var snapshot = await firebaseDb.ref('users').once('value');
@@ -1945,14 +3017,14 @@
                 });
             }
 
-            // ===== Teacher buttons =====
+            // ===== Teacher Buttons =====
             addTeacherBtn.addEventListener("click", function() {
                 if (!currentUser) {
                     alert('⚠️ Please login first');
                     return;
                 }
                 if (!isAdminUser()) {
-                    alert('⚠️ Admin only');
+                    alert('⚠️ Admin access only');
                     return;
                 }
 
@@ -1962,7 +3034,8 @@
                     alert("Please enter teacher name and subject");
                     return;
                 }
-                var newTeacher = { id: 't_' + Date.now(), name: name, subject: subject, icon: getSubjectIcon(subject) };
+                var newTeacher = { id: 't_' + Date.now(), name: name, subject: subject, icon: getSubjectIcon(
+                    subject) };
                 teachersList.push(newTeacher);
                 saveTeachersList();
                 newTeacherNameInput.value = '';
@@ -1979,20 +3052,21 @@
                     return;
                 }
                 if (!isAdminUser()) {
-                    alert('⚠️ Admin only');
+                    alert('⚠️ Admin access only');
                     return;
                 }
 
                 if (!currentTeacherId) {
-                    alert(translations[currentLang].errorSelectTeacher);
+                    alert(t.errorSelectTeacher);
                     return;
                 }
-                if (confirm(translations[currentLang].confirmDeleteTeacher)) {
-                    teachersList = teachersList.filter(function(t) { return t.id !== currentTeacherId; });
+                if (confirm(t.confirmDeleteTeacher)) {
+                    teachersList = teachersList.filter(function(tch) { return tch.id !== currentTeacherId; });
                     saveTeachersList();
                     var keysToRemove = [];
                     Object.keys(localStorage).forEach(function(key) {
-                        if (key.includes('tracking_data_history_' + currentTeacherId + '_')) keysToRemove.push(key);
+                        if (key.includes('tracking_data_history_' + currentTeacherId + '_')) keysToRemove.push(
+                        key);
                         if (key.includes('tracking_names_' + currentTeacherId + '_')) keysToRemove.push(key);
                         if (key.includes('original_names_' + currentTeacherId + '_')) keysToRemove.push(key);
                     });
@@ -2012,9 +3086,9 @@
                     teacherCardContainer.innerHTML = "";
                     studentsContainer.innerHTML = "";
                     tbody.innerHTML = "";
-                    boardTitleEl.textContent = translations[currentLang].boardTitle;
+                    boardTitleEl.textContent = t.boardTitle;
                     initTeacherSelect();
-                    alert(translations[currentLang].teacherDeleted);
+                    alert(t.teacherDeleted);
                 }
             });
 
@@ -2024,11 +3098,10 @@
                     return;
                 }
                 if (!isAdminUser()) {
-                    alert('⚠️ Admin only');
+                    alert('⚠️ Admin access only');
                     return;
                 }
 
-                var t = translations[currentLang];
                 if (confirm(t.confirmDeleteAllTeachers)) {
                     teachersList = [];
                     saveTeachersList();
@@ -2050,7 +3123,7 @@
                     return;
                 }
                 if (!isAdminUser()) {
-                    alert('⚠️ Admin only');
+                    alert('⚠️ Admin access only');
                     return;
                 }
 
@@ -2065,11 +3138,14 @@
                         var addedCount = 0;
                         rows.forEach(function(row) {
                             var name = row[0] ? row[0].toString().trim() : null;
-                            var subject = (row[1] ? row[1].toString().trim() : null) || newTeacherSubjectSelect.value || "Other";
+                            var subject = (row[1] ? row[1].toString().trim() : null) || newTeacherSubjectSelect
+                                .value || "Other";
                             if (name) {
-                                var exists = teachersList.find(function(t) { return t.name === name; });
+                                var exists = teachersList.find(function(tch) { return tch.name === name; });
                                 if (!exists) {
-                                    teachersList.push({ id: 't_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), name: name, subject: subject, icon: getSubjectIcon(subject) });
+                                    teachersList.push({ id: 't_' + Date.now() + '_' + Math.random().toString(36)
+                                            .substr(2, 5), name: name, subject: subject,
+                                        icon: getSubjectIcon(subject) });
                                     addedCount++;
                                 }
                             }
@@ -2077,7 +3153,7 @@
                         if (addedCount > 0) {
                             saveTeachersList();
                             initTeacherSelect();
-                            showMessage('Imported ' + addedCount + ' teachers', 'success');
+                            showMessage('Imported ' + addedCount + ' teacher(s)', 'success');
                         } else {
                             showMessage("No teachers added", 'info');
                         }
@@ -2090,7 +3166,7 @@
                 reader.readAsBinaryString(file);
             });
 
-            // ===== Student functions =====
+            // ===== Student Functions (unchanged) =====
             function initStudentsUI() {
                 studentsContainer.innerHTML = "";
                 studentNames.forEach(function(displayName) {
@@ -2118,7 +3194,6 @@
                 el.textContent = displayName;
                 var displayIndex = studentNames.indexOf(displayName);
                 var originalName = displayIndex !== -1 ? originalStudentNames[displayIndex] : displayName;
-                var t = translations[currentLang];
                 var studentData = data[originalName] || {};
                 var st = studentData ? t.states[studentData.state] : t.states[0];
                 el.style.background = st.color;
@@ -2230,14 +3305,16 @@
                 var studentElement = document.querySelector('.student[data-name="' + displayName + '"]');
                 if (!studentElement) return;
                 data[originalName].state = newState;
-                var t = translations[currentLang];
                 var st = t.states[newState];
                 studentElement.style.background = st.color;
                 studentElement.title = st.label;
-                if (newState === 1) data[originalName].participationCounter = (data[originalName].participationCounter || 0) + 1;
+                if (newState === 1) data[originalName].participationCounter = (data[originalName].participationCounter ||
+                    0) + 1;
                 else if (newState === 2) data[originalName].talkCounter = (data[originalName].talkCounter || 0) + 1;
-                else if (newState === 3) data[originalName].talkWithoutPermissionCounter = (data[originalName].talkWithoutPermissionCounter || 0) + 1;
-                else if (newState === 4) data[originalName].badBehaviorCounter = (data[originalName].badBehaviorCounter || 0) + 1;
+                else if (newState === 3) data[originalName].talkWithoutPermissionCounter = (data[originalName]
+                    .talkWithoutPermissionCounter || 0) + 1;
+                else if (newState === 4) data[originalName].badBehaviorCounter = (data[originalName]
+                    .badBehaviorCounter || 0) + 1;
                 else if (newState === 5) data[originalName].absenceCounter = (data[originalName].absenceCounter || 0) + 1;
                 var msgKey = '';
                 if (newState === 1) msgKey = 'msgParticipate';
@@ -2257,7 +3334,6 @@
                 if (displayIndex === -1) return;
                 var originalName = originalStudentNames[displayIndex] || displayName;
                 data[originalName][counterKey] = (data[originalName][counterKey] || 0) + 1;
-                var t = translations[currentLang];
                 showMessage(displayName + ': ' + t[msgKey], 'info');
                 await saveAll();
                 updateTable();
@@ -2267,7 +3343,6 @@
                 var displayIndex = studentNames.indexOf(displayName);
                 if (displayIndex === -1) return;
                 var originalName = originalStudentNames[displayIndex] || displayName;
-                var t = translations[currentLang];
                 if (confirm(t.confirmDeleteStudent(displayName))) {
                     originalStudentNames.splice(displayIndex, 1);
                     studentNames.splice(displayIndex, 1);
@@ -2286,7 +3361,6 @@
                 var displayIndex = studentNames.indexOf(displayName);
                 if (displayIndex === -1) return;
                 var originalName = originalStudentNames[displayIndex] || displayName;
-                var t = translations[currentLang];
                 if (confirm(t.resetConfirm(displayName))) {
                     data[originalName] = {
                         state: 0, book: true, notebook: true, homework: true, note: "",
@@ -2348,7 +3422,7 @@
                 initStudentsUI();
                 updateTable();
                 editModal.classList.remove('show');
-                showMessage('Updated data for ' + displayName, 'success');
+                showMessage('Data updated for ' + displayName, 'success');
             });
 
             editModalCancel.addEventListener('click', function() {
@@ -2379,7 +3453,9 @@
                     var isActive = studentData[key];
                     var counterKey = key + 'NotActiveCounter';
                     var counterValue = studentData[counterKey] || 0;
-                    td.innerHTML = '<div class="check-cell-content"><span class="check-icon ' + (isActive ? 'active' : 'inactive') + '">' + (isActive ? '✅' : '❌') + '</span><span class="check-counter">' + counterValue + '</span></div>';
+                    td.innerHTML = '<div class="check-cell-content"><span class="check-icon ' + (isActive ? 'active' :
+                        'inactive') + '">' + (isActive ? '✅' : '❌') + '</span><span class="check-counter">' +
+                        counterValue + '</span></div>';
                 };
                 td.addEventListener("click", async function() {
                     var studentData = data[originalName] || {};
@@ -2402,7 +3478,6 @@
             function createNotesCell(displayName) {
                 var td = document.createElement("td");
                 var select = document.createElement("select");
-                var t = translations[currentLang];
                 var displayIndex = studentNames.indexOf(displayName);
                 var originalName = displayIndex !== -1 ? originalStudentNames[displayIndex] : displayName;
                 t.notesOptions.forEach(function(o) {
@@ -2424,7 +3499,8 @@
                 var td = document.createElement("td");
                 var status = getDynamicStatus(type, count);
                 td.className = 'status-text-cell ' + status.class;
-                td.innerHTML = '<div class="cell-wrapper"><span class="action-label">' + status.text + '</span><span class="counter-value">' + status.count + '</span></div>';
+                td.innerHTML = '<div class="cell-wrapper"><span class="action-label">' + status.text +
+                    '</span><span class="counter-value">' + status.count + '</span></div>';
                 return td;
             }
 
@@ -2438,7 +3514,6 @@
 
             function updateTable() {
                 tbody.innerHTML = "";
-                var t = translations[currentLang];
                 studentNames.forEach(function(displayName, displayIndex) {
                     var originalName = originalStudentNames[displayIndex] || displayName;
                     var studentData = data[originalName] || {};
@@ -2541,7 +3616,8 @@
                     btnTableNotebook.onclick = (function(displayName) {
                         return async function(e) {
                             e.stopPropagation();
-                            await incrementCounter(displayName, 'notebookNotActiveCounter', 'notBringingNotebook');
+                            await incrementCounter(displayName, 'notebookNotActiveCounter',
+                            'notBringingNotebook');
                         };
                     })(displayName);
                     quickActions.appendChild(btnTableNotebook);
@@ -2576,7 +3652,8 @@
                     row.appendChild(nameCell);
 
                     var ratingCell = document.createElement("td");
-                    ratingCell.innerHTML = '⭐'.repeat(st.stars) + ' <span class="stars-count">' + st.stars + '</span>';
+                    ratingCell.innerHTML = '⭐'.repeat(st.stars) + ' <span class="stars-count">' + st.stars +
+                    '</span>';
                     row.appendChild(ratingCell);
                     row.appendChild(createStatusCell(stIdx === 1, "✔"));
                     row.appendChild(createStatusCell(stIdx === 2, "✔"));
@@ -2651,44 +3728,40 @@
                 });
             }
 
-            // Force English language (no toggle)
-            function applyLanguage(lang) {
-                // Only English is supported
-                currentLang = 'en';
+            // ===== Apply English UI =====
+            function applyEnglish() {
                 document.body.dir = 'ltr';
                 document.documentElement.lang = 'en';
                 document.documentElement.dir = 'ltr';
-                var t = translations['en'];
-                // Update all text elements to English
-                classTitleInput.placeholder = "Enter class name...";
-                importExcelLabel.textContent = "📥 Import names from Excel";
+
+                classTitleInput.placeholder = "Enter class title...";
+                importExcelLabel.textContent = "📥 Import Names from Excel";
                 exportExcel.textContent = "📤 Export Excel";
-                newTeacherNameInput.placeholder = "Teacher name...";
-                newStudentNameInput.placeholder = "Add student manually...";
-                deleteTeacherBtn.textContent = "🗑️ Delete";
-                deleteAllTeachersBtn.textContent = "💥 Delete All";
-                importTeachersLabel.innerHTML = "<i class='fas fa-file-excel'></i> Import Teachers";
-                var classNameDisplay = currentClass ? (classOptions[currentClass]?.[lang] || currentClass) : "";
-                var teacherNameDisplay = currentTeacherId ? (teachersList.find(function(tch) { return tch.id === currentTeacherId; })?.name || "") : "";
+                newTeacherNameInput.placeholder = t.newTeacherPlaceholder;
+                newStudentNameInput.placeholder = t.newStudentPlaceholder;
+                deleteTeacherBtn.textContent = t.deleteTeacher;
+                deleteAllTeachersBtn.textContent = t.deleteAllTeachers;
+                importTeachersLabel.innerHTML = t.importTeachersLabel;
+
+                var classNameDisplay = currentClass || "";
+                var teacherNameDisplay = currentTeacherId ? (teachersList.find(function(tch) { return tch.id ===
+                    currentTeacherId; })?.name || "") : "";
                 var titleText = classTitleInput.value || (teacherNameDisplay + ' - ' + classNameDisplay);
-                boardTitleEl.textContent = "📋 Teacher Tracking Board - " + titleText;
-                Array.from(classSelect.options).forEach(function(option) {
-                    var val = option.value;
-                    if (val && classOptions[val]) option.textContent = classOptions[val].en;
-                });
-                table.querySelectorAll("th").forEach(function(header) {
-                    var key = header.getAttribute('data-key');
-                    if (key && t[key]) header.textContent = t[key];
-                });
+                boardTitleEl.textContent = "📋 Teacher Dashboard - " + titleText;
+
                 var copyrightFooter = document.getElementById('copyrightFooter');
-                if (copyrightFooter) copyrightFooter.textContent = "📊 Teacher & Student Tracking System - © 2026 Mohamed Reda Awf - All Rights Reserved";
+                if (copyrightFooter) copyrightFooter.textContent =
+                    "📊 Teacher & Student Tracking System - © 2026 Mohamed Reda Awf";
+
                 var teacherCard = document.querySelector('.teacher-card');
                 if (teacherCard) {
                     var teacherInfo = teacherCard.querySelector('.teacher-info p');
                     if (teacherInfo) {
-                        teacherInfo.textContent = 'Subject: ' + (teachersList.find(function(t) { return t.id === currentTeacherId; })?.subject || '');
+                        teacherInfo.textContent = 'Specialization: ' + (teachersList.find(function(tch) { return tch.id ===
+                            currentTeacherId; })?.subject || '');
                     }
                 }
+
                 localStorage.setItem('dashboard_lang', 'en');
                 updateDisplayNames();
                 initStudentsUI();
@@ -2702,34 +3775,12 @@
                 }, 400);
             }
 
-            var classOptions = {
-                '4B': { en: '4th B' },
-                '4D': { en: '4th D' },
-                '5B': { en: '5th B' },
-                '5D': { en: '5th D' },
-                '6B': { en: '6th B' },
-                '6D': { en: '6th D' },
-                '7B': { en: '7th B' },
-                '7D': { en: '7th D' },
-                '8B': { en: '8th B' },
-                '8D': { en: '8th D' },
-                '9B': { en: '9th B' },
-                '9D': { en: '9th D' },
-                '10B': { en: '10th B' },
-                '10D': { en: '10th D' },
-                '11B': { en: '11th B' },
-                '11D': { en: '11th D' },
-                '12B': { en: '12th B' },
-                '12D': { en: '12th D' }
-            };
-
-            // ===== Admin functions =====
+            // ===== Admin Functions (unchanged) =====
             function getTeacherById(id) {
                 return teachersList.find(function(t) { return t.id === id; }) || null;
             }
 
             function calculateLevel(state, participation) {
-                var t = translations[currentLang];
                 if (state === 1 && participation >= 70) return t.levels[5];
                 if (state === 1 && participation >= 50) return t.levels[4];
                 if (state === 1 && participation >= 30) return t.levels[3];
@@ -2748,9 +3799,12 @@
 
             function getAllLocalStorageData() {
                 var results = [];
-                var filterTeacher = document.getElementById('adminTeacherFilter') ? document.getElementById('adminTeacherFilter').value : 'all';
-                var filterClass = document.getElementById('adminClassFilter') ? document.getElementById('adminClassFilter').value : 'all';
-                var filterDate = document.getElementById('adminDateFilter') ? document.getElementById('adminDateFilter').value : '';
+                var filterTeacher = document.getElementById('adminTeacherFilter') ? document.getElementById(
+                    'adminTeacherFilter').value : 'all';
+                var filterClass = document.getElementById('adminClassFilter') ? document.getElementById(
+                    'adminClassFilter').value : 'all';
+                var filterDate = document.getElementById('adminDateFilter') ? document.getElementById('adminDateFilter')
+                    .value : '';
 
                 Object.keys(localStorage).forEach(function(key) {
                     if (key.indexOf('tracking_data_history_') === 0) {
@@ -2777,7 +3831,7 @@
                                     date: dateKey,
                                     student: sName,
                                     state: sd.state,
-                                    attendance: sd.state===5 ? 'Absent' : 'Present',
+                                    attendance: sd.state === 5 ? 'Absent' : 'Present',
                                     book: sd.book ? '✅' : '❌',
                                     notebook: sd.notebook ? '✅' : '❌',
                                     homework: sd.homework ? '✅' : '❌',
@@ -2809,7 +3863,11 @@
 
                 results.forEach(function(r) {
                     var tr = document.createElement('tr');
-                    var cells = [r.teacher, r.subject, r.class, r.date, r.student, r.state+'/5', r.attendance, r.book, r.notebook, r.homework, r.note, r.participation, r.absence, r.lateness, r.behavior, r.talking, r.noPart, r.noBook, r.noNotebook, r.noHomework, r.level, r.progress];
+                    var cells = [r.teacher, r.subject, r.class, r.date, r.student, r.state + '/5', r.attendance,
+                        r.book, r.notebook, r.homework, r.note, r.participation, r.absence, r.lateness,
+                        r.behavior, r.talking, r.noPart, r.noBook, r.noNotebook, r.noHomework, r.level,
+                        r.progress
+                    ];
                     cells.forEach(function(val) {
                         var td = document.createElement('td');
                         td.textContent = val;
@@ -2828,7 +3886,7 @@
                 }
             }
 
-            // ===== Admin view button =====
+            // Admin View Button
             if (adminViewBtn) {
                 adminViewBtn.onclick = function() {
                     if (!currentUser) {
@@ -2836,16 +3894,16 @@
                         return;
                     }
                     if (!isAdminUser()) {
-                        showMessage('⚠️ Admin only', 'error');
+                        showMessage('⚠️ Admin access only', 'error');
                         return;
                     }
                     var teacherFilter = document.getElementById('adminTeacherFilter');
                     if (teacherFilter) {
                         teacherFilter.innerHTML = '<option value="all">All</option>';
-                        teachersList.forEach(function(t) {
+                        teachersList.forEach(function(tch) {
                             var opt = document.createElement('option');
-                            opt.value = t.id;
-                            opt.textContent = t.name + ' - ' + t.subject;
+                            opt.value = tch.id;
+                            opt.textContent = tch.name + ' - ' + tch.subject;
                             teacherFilter.appendChild(opt);
                         });
                     }
@@ -2867,7 +3925,7 @@
                 };
             }
 
-            // ===== Filter buttons in modal =====
+            // Filter buttons
             document.getElementById('adminApplyFilterBtn')?.addEventListener('click', function() {
                 renderAdminTable();
                 setTimeout(function() { renderAdminVisualCharts(); }, 300);
@@ -2889,7 +3947,7 @@
                 if (e.target === this) this.classList.remove('show');
             });
 
-            // ===== Export all data for admin (4 sheets) =====
+            // Export All Data (Admin) - 4 sheets
             if (exportAllDataBtn) {
                 exportAllDataBtn.onclick = function() {
                     if (!currentUser) {
@@ -2897,7 +3955,7 @@
                         return;
                     }
                     if (!isAdminUser()) {
-                        showMessage('⚠️ Admin only', 'error');
+                        showMessage('⚠️ Admin access only', 'error');
                         return;
                     }
 
@@ -2911,11 +3969,14 @@
                     wb.creator = 'Mohamed Reda Awf';
                     var cellStyle = {
                         alignment: { horizontal: 'center', vertical: 'middle' },
-                        border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+                        border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' },
+                            right: { style: 'thin' } }
                     };
 
-                    var wsNew = wb.addWorksheet('Teacher Activation', { properties: { tabColor: { argb: 'FF8B5CF6' } } });
-                    var headersNew = ['Teacher Name', 'Subject', 'Class', 'Participating Students', 'Total Students', 'Class Control %', 'Student Interaction %', 'Overall Activation %'];
+                    var wsNew = wb.addWorksheet('Teacher Interaction', { properties: { tabColor: { argb: 'FF8B5CF6' } } });
+                    var headersNew = ['Teacher Name', 'Subject', 'Class', 'Participating Students', 'Total Students',
+                        'Class Control %', 'Student Interaction %', 'Overall Teacher Activation %'
+                    ];
                     var rHNew = wsNew.addRow(headersNew);
                     rHNew.eachCell(function(c) {
                         c.font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -2963,12 +4024,15 @@
                         Object.keys(g.students).forEach(function(sName) {
                             if (g.students[sName].participation > 0) participatingStudentsCount++;
                         });
-                        var classControl = 100 - (((g.totalBehavior + g.totalTalking) / (g.totalRecords || 1)) * 100);
+                        var classControl = 100 - (((g.totalBehavior + g.totalTalking) / (g.totalRecords || 1)) *
+                        100);
                         classControl = Math.max(0, Math.min(100, Math.round(classControl)));
-                        var studentInteraction = totalStudentsInClass > 0 ? (participatingStudentsCount / totalStudentsInClass) * 100 : 0;
+                        var studentInteraction = totalStudentsInClass > 0 ? (participatingStudentsCount /
+                            totalStudentsInClass) * 100 : 0;
                         studentInteraction = Math.round(studentInteraction);
                         var attendanceRate = g.totalRecords > 0 ? (g.totalAttendance / g.totalRecords) * 100 : 0;
-                        var toolsRate = g.totalRecords > 0 ? ((g.totalBook + g.totalNotebook + g.totalHomework) / (g.totalRecords * 3)) * 100 : 0;
+                        var toolsRate = g.totalRecords > 0 ? ((g.totalBook + g.totalNotebook + g.totalHomework) /
+                            (g.totalRecords * 3)) * 100 : 0;
                         var overallActivation = (classControl + studentInteraction + attendanceRate + toolsRate) / 4;
                         overallActivation = Math.max(0, Math.min(100, Math.round(overallActivation)));
                         var rRow = wsNew.addRow([
@@ -2987,7 +4051,10 @@
                     wsNew.getColumn(1).width = 25;
 
                     var ws1 = wb.addWorksheet('All Records', { properties: { tabColor: { argb: 'FF4F46E5' } } });
-                    var headers1 = ['Teacher','Subject','Class','Date','Student','Rating','Attendance','Book','Notebook','Homework','Notes','Participation','Absence','Lateness','Behavior','Talking','No Participation','No Book','No Notebook','No Homework','Level','Progress %'];
+                    var headers1 = ['Teacher', 'Subject', 'Class', 'Date', 'Student', 'Rating', 'Attendance', 'Book',
+                        'Notebook', 'Homework', 'Notes', 'Participations', 'Absences', 'Lateness', 'Behaviors',
+                        'Talking', 'Not Participate', 'No Book', 'No Notebook', 'No Homework', 'Level', 'Progress %'
+                    ];
                     var rH1 = ws1.addRow(headers1);
                     rH1.eachCell(function(c) {
                         c.font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -2996,7 +4063,11 @@
                         c.border = cellStyle.border;
                     });
                     results.forEach(function(r) {
-                        var rRow = ws1.addRow([r.teacher, r.subject, r.class, r.date, r.student, r.state, r.attendance, r.book, r.notebook, r.homework, r.note, r.participation, r.absence, r.lateness, r.behavior, r.talking, r.noPart, r.noBook, r.noNotebook, r.noHomework, r.level, r.progress]);
+                        var rRow = ws1.addRow([r.teacher, r.subject, r.class, r.date, r.student, r.state,
+                            r.attendance, r.book, r.notebook, r.homework, r.note, r.participation,
+                            r.absence, r.lateness, r.behavior, r.talking, r.noPart, r.noBook, r
+                            .noNotebook, r.noHomework, r.level, r.progress
+                        ]);
                         rRow.eachCell(function(cell) { cell.style = cellStyle; });
                     });
                     ws1.columns.forEach(function(col) { col.width = 15; });
@@ -3004,7 +4075,7 @@
                     ws1.getColumn(5).width = 25;
 
                     var ws2 = wb.addWorksheet('Student Summary', { properties: { tabColor: { argb: 'FF10B981' } } });
-                    var headers2 = ['Student','Total Participation','Total Absence','Total Negative Behaviors'];
+                    var headers2 = ['Student', 'Total Participations', 'Total Absences', 'Total Negative Behaviors'];
                     var rH2 = ws2.addRow(headers2);
                     rH2.eachCell(function(c) {
                         c.font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -3014,7 +4085,8 @@
                     });
                     var studentSummary = {};
                     results.forEach(function(r) {
-                        if (!studentSummary[r.student]) studentSummary[r.student] = {participation:0, absence:0, behavior:0};
+                        if (!studentSummary[r.student]) studentSummary[r.student] = { participation: 0,
+                            absence: 0, behavior: 0 };
                         studentSummary[r.student].participation += r.participation;
                         studentSummary[r.student].absence += r.absence;
                         studentSummary[r.student].behavior += r.behavior;
@@ -3027,19 +4099,21 @@
                     ws2.columns.forEach(function(col) { col.width = 18; });
                     ws2.getColumn(1).width = 25;
 
-                    var ws3 = wb.addWorksheet('General Statistics', {properties:{tabColor:{argb:'FFDC2626'}}});
+                    var ws3 = wb.addWorksheet('General Statistics', { properties: { tabColor: { argb: 'FFDC2626' } } });
                     var totalS = Object.keys(studentSummary).length;
-                    var totalP = 0, totalA = 0, totalB = 0;
+                    var totalP = 0,
+                        totalA = 0,
+                        totalB = 0;
                     Object.values(studentSummary).forEach(function(s) {
                         totalP += s.participation;
                         totalA += s.absence;
                         totalB += s.behavior;
                     });
                     var statsData = [
-                        ['Statistic','Value'],
+                        ['Statistic', 'Value'],
                         ['Total School Records', results.length],
                         ['Total Students', totalS],
-                        ['Total School Participation', totalP],
+                        ['Total School Participations', totalP],
                         ['Total School Absences', totalA],
                         ['Total Observed Behaviors', totalB],
                         ['Average Participation per Student', totalS > 0 ? (totalP / totalS).toFixed(1) : 0],
@@ -3049,13 +4123,15 @@
                         var r = ws3.addRow(row);
                         if (idx === 0) {
                             r.eachCell(function(cell) {
-                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDC2626' } };
+                                cell.fill = { type: 'pattern', pattern: 'solid',
+                                    fgColor: { argb: 'FFDC2626' } };
                                 cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
                             });
                         }
                         r.eachCell(function(cell) {
                             cell.alignment = { horizontal: 'center' };
-                            cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+                            cell.border = { top: { style: 'thin' }, left: { style: 'thin' },
+                                bottom: { style: 'thin' }, right: { style: 'thin' } };
                         });
                     });
                     ws3.getColumn(1).width = 35;
@@ -3066,10 +4142,12 @@
                         var url = URL.createObjectURL(blob);
                         var a = document.createElement('a');
                         a.href = url;
-                        a.download = 'Admin_Comprehensive_Report_4_Sheets_' + formattedSelectedDate() + '.xlsx';
+                        a.download = 'Admin_Comprehensive_Report_4_Sheets_' + formattedSelectedDate() +
+                        '.xlsx';
                         a.click();
                         URL.revokeObjectURL(url);
-                        showMessage('✅ Admin comprehensive report exported successfully (4 sheets including teacher activation)', 'success');
+                        showMessage('✅ Admin comprehensive report exported successfully (4 sheets including teacher interaction)',
+                            'success');
                     }).catch(function(err) {
                         console.error(err);
                         showMessage('❌ Export error', 'error');
@@ -3077,14 +4155,13 @@
                 };
             }
 
-            // ===== Daily Excel export =====
+            // Daily Excel Export
             if (document.getElementById("exportExcel")) {
                 document.getElementById("exportExcel").addEventListener("click", function() {
                     if (!currentTeacherId || !currentClass) {
-                        alert("Please select Teacher and Class first.");
+                        alert("Please select teacher and class first");
                         return;
                     }
-                    const t = translations[currentLang];
                     const rows = [];
                     const currentSelDate = selectedDate;
                     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -3095,13 +4172,15 @@
                     const teacherName = teacher ? teacher.name : "Teacher";
                     const className = currentClass;
 
-                    rows.push([`Comprehensive Tracking Report - Teacher: ${teacherName} - Class: ${className} - Day: ${dayName} (${dateString}) - Export Time: ${timeString}`]);
+                    rows.push([`Comprehensive Tracking - Teacher: ${teacherName} - Class: ${className} - Day: ${dayName} (${dateString}) - Export time: ${timeString}`]);
                     rows.push([]);
                     rows.push([
-                        'Name', '⭐ Rating', 'Good Participation', 'Talking in Class', 'Not Participating', 'Behavior', 'Lateness', 'Attendance',
-                        '📗 Book', '📒 Notebook', '📘 Homework', 'Notes', 'Status', 'Participation Counter', 'Level',
-                        'Progress %', 'Absence Counter', 'Talking Counter', 'No Participation', 'No Book',
-                        'No Notebook', 'No Homework', 'Behavior Count', 'Lateness Counter'
+                        'Name', '⭐ Rating', 'Good Participation', 'Talks in Class', 'Does Not Participate',
+                        'Behavior', 'Late', 'Attendance',
+                        '📗 Book', '📒 Notebook', '📘 Homework', 'Notes', 'Status', 'Participation Count',
+                        'Level', 'Progress %', 'Absence Count', 'Talk Count',
+                        'Not Participate Count', 'Book Missing', 'Notebook Missing', 'Homework Missing',
+                        'Behavior Count', 'Lateness Count'
                     ]);
 
                     studentNames.forEach((displayName, displayIndex) => {
@@ -3110,8 +4189,10 @@
                         const stIdx = studentData.state || 0;
                         const st = t.states[stIdx];
 
-                        const baseLevel = typeof calculateLevel === 'function' ? calculateLevel(stIdx, studentData.participationCounter) : (studentData.level || "");
-                        const pPercentage = typeof calculateProgress === 'function' ? calculateProgress(studentData) : 0;
+                        const baseLevel = typeof calculateLevel === 'function' ? calculateLevel(stIdx,
+                            studentData.participationCounter) : (studentData.level || "");
+                        const pPercentage = typeof calculateProgress === 'function' ? calculateProgress(
+                            studentData) : 0;
 
                         rows.push([
                             displayName,
@@ -3144,18 +4225,18 @@
                     const wb = XLSX.utils.book_new();
                     const ws = XLSX.utils.aoa_to_sheet(rows);
                     XLSX.utils.book_append_sheet(wb, ws, "Daily Data");
-                    XLSX.writeFile(wb, `Tracking_${teacherName}_${className}_${dateString.replace(/\//g, '-')}.xlsx`);
+                    XLSX.writeFile(wb,
+                        `Tracking_${teacherName}_${className}_${dateString.replace(/\//g, '-')}.xlsx`);
                 });
             }
 
-            // ===== Yearly comprehensive report =====
+            // Yearly Report
             if (document.getElementById("showYearReportBtn")) {
                 document.getElementById("showYearReportBtn").onclick = async function() {
                     if (!currentTeacherId || !currentClass) {
                         alert("Please select teacher and class first");
                         return;
                     }
-                    const t = translations[currentLang];
                     const teacher = teachersList.find(tch => tch.id === currentTeacherId);
                     const teacherName = teacher ? teacher.name : "Teacher";
                     const className = currentClass;
@@ -3164,7 +4245,8 @@
                     const studentTotals = {};
 
                     originalStudentNames.forEach(name => {
-                        studentTotals[name] = { participation: 0, absence: 0, lateness: 0, behavior: 0, book: 0, notebook: 0, homework: 0, days: 0 };
+                        studentTotals[name] = { participation: 0, absence: 0, lateness: 0, behavior: 0,
+                            book: 0, notebook: 0, homework: 0, days: 0 };
                     });
 
                     sortedDates.forEach(dateKey => {
@@ -3173,7 +4255,8 @@
                             if (dayData[name]) {
                                 const sData = dayData[name];
                                 studentTotals[name].days++;
-                                studentTotals[name].participation += (sData.participationCounter || 0);
+                                studentTotals[name].participation += (sData.participationCounter ||
+                                0);
                                 studentTotals[name].absence += (sData.absenceCounter || 0);
                                 studentTotals[name].lateness += (sData.latenessCounter || 0);
                                 studentTotals[name].behavior += (sData.badBehaviorCounter || 0);
@@ -3190,14 +4273,18 @@
                     workbook.created = new Date();
                     workbook.modified = new Date();
 
-                    const worksheetDetail = workbook.addWorksheet('Detailed Data', { pageSetup: { paperSize: 9, orientation: 'landscape' } });
+                    const worksheetDetail = workbook.addWorksheet('Detailed Data', { pageSetup: { paperSize: 9,
+                            orientation: 'landscape' } });
                     worksheetDetail.mergeCells('A1:K1');
                     const titleRow = worksheetDetail.getRow(1);
-                    titleRow.getCell(1).value = `📊 ${t.boardTitle} - ${teacherName} - ${className} (Comprehensive Report)`;
+                    titleRow.getCell(1).value =
+                        `📊 ${t.boardTitle} - ${teacherName} - ${className} (Comprehensive Report)`;
                     titleRow.getCell(1).font = { bold: true, size: 14 };
                     titleRow.getCell(1).alignment = { horizontal: 'center' };
 
-                    worksheetDetail.addRow(["Date", "Name", "Status", "Participation", "Absence", "Lateness", "Behavior", "No Book", "No Notebook", "No Homework", "Notes"]);
+                    worksheetDetail.addRow(["Date", "Name", "Status", "Participation", "Absence", "Lateness",
+                        "Behavior", "Book Missing", "Notebook Missing", "Homework Missing", "Notes"
+                    ]);
 
                     sortedDates.forEach(dateKey => {
                         const dayData = allHistoryData[dateKey] || {};
@@ -3209,8 +4296,10 @@
                                 const st = t.states[stIdx];
                                 worksheetDetail.addRow([
                                     dateKey, displayName, st.label, sd.participationCounter || 0,
-                                    sd.absenceCounter || 0, sd.latenessCounter || 0, sd.badBehaviorCounter || 0,
-                                    sd.book ? "" : "❌", sd.notebook ? "" : "❌", sd.homework ? "" : "❌", sd.note || ""
+                                    sd.absenceCounter || 0, sd.latenessCounter || 0, sd
+                                    .badBehaviorCounter || 0,
+                                    sd.book ? "" : "❌", sd.notebook ? "" : "❌", sd.homework ?
+                                    "" : "❌", sd.note || ""
                                 ]);
                             }
                         });
@@ -3218,17 +4307,23 @@
 
                     worksheetDetail.columns = [
                         { width: 12 }, { width: 20 }, { width: 25 }, { width: 10 }, { width: 8 },
-                        { width: 8 }, { width: 8 }, { width: 12 }, { width: 12 }, { width: 12 }, { width: 30 }
+                        { width: 8 }, { width: 8 }, { width: 12 }, { width: 12 }, { width: 12 },
+                        { width: 30 }
                     ];
 
                     const worksheetSummary = workbook.addWorksheet('Student Summary');
-                    worksheetSummary.addRow(["Name", "Total Participation", "Total Absence", "Total Lateness", "Total Bad Behavior", "No Book", "No Notebook", "No Homework", "Days"]);
+                    worksheetSummary.addRow(["Name", "Total Participations", "Total Absences", "Total Lateness",
+                        "Total Negative Behavior", "Book Missing", "Notebook Missing", "Homework Missing",
+                        "Days"
+                    ]);
 
                     originalStudentNames.forEach((originalName, idx) => {
                         const displayName = studentNames[idx] || originalName;
                         const totals = studentTotals[originalName] || {};
                         worksheetSummary.addRow([
-                            displayName, totals.participation || 0, totals.absence || 0, totals.lateness || 0, totals.behavior || 0, totals.book || 0, totals.notebook || 0, totals.homework || 0, totals.days || 0
+                            displayName, totals.participation || 0, totals.absence || 0, totals
+                            .lateness || 0, totals.behavior || 0, totals.book || 0, totals
+                            .notebook || 0, totals.homework || 0, totals.days || 0
                         ]);
                     });
 
@@ -3244,31 +4339,36 @@
                     statsTitle.getCell(1).font = { bold: true, size: 14 };
                     statsTitle.getCell(1).alignment = { horizontal: 'center' };
 
-                    let totalParticipation = 0, totalAbsence = 0, totalLateness = 0, totalBehavior = 0;
-                    let totalBook = 0, totalNotebook = 0, totalHomework = 0;
+                    let totalParticipation = 0,
+                        totalAbsence = 0,
+                        totalLateness = 0,
+                        totalBehavior = 0;
+                    let totalBook = 0,
+                        totalNotebook = 0,
+                        totalHomework = 0;
                     let totalDays = sortedDates.length;
 
                     originalStudentNames.forEach(name => {
-                        const t = studentTotals[name] || {};
-                        totalParticipation += t.participation || 0;
-                        totalAbsence += t.absence || 0;
-                        totalLateness += t.lateness || 0;
-                        totalBehavior += t.behavior || 0;
-                        totalBook += t.book || 0;
-                        totalNotebook += t.notebook || 0;
-                        totalHomework += t.homework || 0;
+                        const t2 = studentTotals[name] || {};
+                        totalParticipation += t2.participation || 0;
+                        totalAbsence += t2.absence || 0;
+                        totalLateness += t2.lateness || 0;
+                        totalBehavior += t2.behavior || 0;
+                        totalBook += t2.book || 0;
+                        totalNotebook += t2.notebook || 0;
+                        totalHomework += t2.homework || 0;
                     });
 
                     worksheetStats.addRow(["Item", "Value"]);
                     worksheetStats.addRow(["Number of Students", originalStudentNames.length]);
                     worksheetStats.addRow(["Number of Days Recorded", totalDays]);
-                    worksheetStats.addRow(["Total Participation", totalParticipation]);
-                    worksheetStats.addRow(["Total Absence", totalAbsence]);
+                    worksheetStats.addRow(["Total Participations", totalParticipation]);
+                    worksheetStats.addRow(["Total Absences", totalAbsence]);
                     worksheetStats.addRow(["Total Lateness", totalLateness]);
-                    worksheetStats.addRow(["Total Bad Behavior", totalBehavior]);
-                    worksheetStats.addRow(["Total No Book", totalBook]);
-                    worksheetStats.addRow(["Total No Notebook", totalNotebook]);
-                    worksheetStats.addRow(["Total No Homework", totalHomework]);
+                    worksheetStats.addRow(["Total Negative Behavior", totalBehavior]);
+                    worksheetStats.addRow(["Total Book Missing", totalBook]);
+                    worksheetStats.addRow(["Total Notebook Missing", totalNotebook]);
+                    worksheetStats.addRow(["Total Homework Missing", totalHomework]);
 
                     worksheetStats.columns = [{ width: 30 }, { width: 20 }];
 
@@ -3287,11 +4387,11 @@
                 };
             }
 
-            // ===== View All Data button =====
+            // View All Data (Admin)
             if (viewAllDataBtn) {
                 viewAllDataBtn.onclick = function() {
                     if (!isAdminUser()) {
-                        showMessage('⚠️ Admin only', 'error');
+                        showMessage('⚠️ Admin access only', 'error');
                         return;
                     }
 
@@ -3305,12 +4405,15 @@
                     if (!container) {
                         container = document.createElement("div");
                         container.id = "adminDataContainer";
-                        container.style.cssText = "margin-top: 25px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;";
+                        container.style.cssText =
+                            "margin-top: 25px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;";
                         viewAllDataBtn.parentNode.appendChild(container);
                     }
 
                     var teacherStats = {};
-                    var totalP = 0, totalA = 0, totalB = 0;
+                    var totalP = 0,
+                        totalA = 0,
+                        totalB = 0;
 
                     results.forEach(function(r) {
                         totalP += (r.participation || 0);
@@ -3319,7 +4422,8 @@
 
                         var key = r.teacher + '||' + r.class;
                         if (!teacherStats[key]) {
-                            teacherStats[key] = { teacher: r.teacher, className: r.class, students: {}, records: 0, bad: 0 };
+                            teacherStats[key] = { teacher: r.teacher, className: r.class, students: {},
+                                records: 0, bad: 0 };
                         }
                         teacherStats[key].records++;
                         teacherStats[key].bad += ((r.behavior || 0) + (r.talking || 0));
@@ -3331,12 +4435,12 @@
                     var html = `
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; margin-bottom: 20px;">
                             <h3 style="color: #4f46e5; font-size: 18px;"><i class="fa-solid fa-database"></i> Comprehensive Database Review</h3>
-                            <button onclick="document.getElementById('adminDataContainer').style.display='none'" style="background:#ef4444; color:#fff; border:none; padding:5px 10px; border-radius:6px; cursor:pointer;">Close</button>
+                            <button onclick="document.getElementById('adminDataContainer').style.display='none'" style="background:#ef4444; color:#fff; border:none; padding:5px 10px; border-radius:6px; cursor:pointer;">Close View</button>
                         </div>
                         
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
                             <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 15px; border-radius: 8px;">
-                                <span style="font-size: 12px; color: #16a34a; font-weight: bold;">Total Participation</span>
+                                <span style="font-size: 12px; color: #16a34a; font-weight: bold;">Total Participations</span>
                                 <h2 style="margin-top: 5px; color: #14532d;">${totalP}</h2>
                             </div>
                             <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; border-radius: 8px;">
@@ -3344,12 +4448,12 @@
                                 <h2 style="margin-top: 5px; color: #7f1d1d;">${totalA}</h2>
                             </div>
                             <div style="background: #fffbeb; border-left: 4px solid #d97706; padding: 15px; border-radius: 8px;">
-                                <span style="font-size: 12px; color: #d97706; font-weight: bold;">Behavior Violations</span>
+                                <span style="font-size: 12px; color: #d97706; font-weight: bold;">Behavioral Violations</span>
                                 <h2 style="margin-top: 5px; color: #78350f;">${totalB}</h2>
                             </div>
                         </div>
 
-                        <h4 style="color:#374151; margin-bottom:10px;"><i class="fa-solid fa-chalkboard-user"></i> 1. Teacher Interaction & Class Control Indicators</h4>
+                        <h4 style="color:#374151; margin-bottom:10px;"><i class="fa-solid fa-chalkboard-user"></i> 1. Teacher & Class Interaction Indicators</h4>
                         <div style="overflow-x: auto; margin-bottom: 25px;">
                             <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 14px;">
                                 <thead>
@@ -3371,7 +4475,8 @@
                         Object.keys(g.students).forEach(function(s) { if (g.students[s] > 0) activeStudents++; });
 
                         var control = Math.max(0, Math.min(100, Math.round(100 - ((g.bad / g.records) * 100))));
-                        var interaction = totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 0;
+                        var interaction = totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) :
+                            0;
 
                         html += `
                             <tr style="background: #f9fafb;">
@@ -3389,7 +4494,7 @@
                             </table>
                         </div>
 
-                        <h4 style="color:#374151; margin-bottom:10px;"><i class="fa-solid fa-list"></i> 2. Comprehensive Record Details</h4>
+                        <h4 style="color:#374151; margin-bottom:10px;"><i class="fa-solid fa-list"></i> 2. Detailed Records Summary</h4>
                         <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
                             <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;">
                                 <thead>
@@ -3399,7 +4504,7 @@
                                         <th style="padding: 8px; border: 1px solid #e5e7eb;">Date</th>
                                         <th style="padding: 8px; border: 1px solid #e5e7eb;">Student</th>
                                         <th style="padding: 8px; border: 1px solid #e5e7eb;">Status</th>
-                                        <th style="padding: 8px; border: 1px solid #e5e7eb;">Participation</th>
+                                        <th style="padding: 8px; border: 1px solid #e5e7eb;">Participations</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -3430,33 +4535,36 @@
                 };
             }
 
-            // ===== Remaining event bindings =====
+            // ===== Event Listeners for remaining buttons =====
             addClassBtn.addEventListener("click", addNewClass);
             deleteClassBtn.addEventListener("click", deleteCurrentClass);
             teacherSelect.addEventListener("change", function(e) { selectTeacher(e.target.value); });
             classSelect.addEventListener("change", function(e) { selectClass(e.target.value); });
 
             addStudentBtn.addEventListener("click", async function() {
-                if (!currentTeacherId) { alert(translations[currentLang].errorSelectTeacher); return; }
-                if (!currentClass) { alert(translations[currentLang].errorSelectClass); return; }
+                if (!currentTeacherId) { alert(t.errorSelectTeacher); return; }
+                if (!currentClass) { alert(t.errorSelectClass); return; }
                 var name = newStudentNameInput.value.trim();
                 if (!name) { alert("Please enter student name"); return; }
                 if (originalStudentNames.includes(name)) { alert("Student already exists"); return; }
                 originalStudentNames.push(name);
                 updateDisplayNames();
                 if (!data[name]) {
-                    data[name] = { state: 0, book: true, notebook: true, homework: true, note: "", participationCounter: 0, absenceCounter: 0, badBehaviorCounter: 0, talkCounter: 0, talkWithoutPermissionCounter: 0, bookNotActiveCounter: 0, notebookNotActiveCounter: 0, homeworkNotActiveCounter: 0, latenessCounter: 0 };
+                    data[name] = { state: 0, book: true, notebook: true, homework: true, note: "",
+                        participationCounter: 0, absenceCounter: 0, badBehaviorCounter: 0, talkCounter: 0,
+                        talkWithoutPermissionCounter: 0, bookNotActiveCounter: 0, notebookNotActiveCounter: 0,
+                        homeworkNotActiveCounter: 0, latenessCounter: 0 };
                 }
                 newStudentNameInput.value = '';
                 await saveAll();
                 initStudentsUI();
                 updateTable();
-                alert(translations[currentLang].studentAdded);
+                alert(t.studentAdded);
             });
 
             importExcel.addEventListener("change", async function(e) {
                 if (!currentTeacherId || !currentClass) {
-                    alert(translations[currentLang].errorSelectTeacher + "\n" + translations[currentLang].errorSelectClass);
+                    alert(t.errorSelectTeacher + "\n" + t.errorSelectClass);
                     return;
                 }
                 var file = e.target.files[0];
@@ -3467,17 +4575,18 @@
                         var wb = XLSX.read(evt.target.result, { type: "binary" });
                         var sheet = wb.Sheets[wb.SheetNames[0]];
                         var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                        var importedNames = rows.map(function(r) { return r[0]; }).filter(Boolean).map(function(name) { return name.toString().trim(); });
+                        var importedNames = rows.map(function(r) { return r[0]; }).filter(Boolean).map(function(
+                        name) { return name.toString().trim(); });
                         originalStudentNames = importedNames;
                         updateDisplayNames();
                         ensureAllStudentsInData();
                         initStudentsUI();
                         updateTable();
                         await saveAll();
-                        alert('Successfully loaded ' + originalStudentNames.length + ' students');
+                        alert('Imported ' + originalStudentNames.length + ' student(s) successfully');
                         importExcel.value = '';
                     } catch (error) {
-                        alert("Error loading file");
+                        alert("Error reading file");
                         console.error(error);
                     }
                 };
@@ -3486,10 +4595,9 @@
 
             resetAllCountersBtn.addEventListener('click', async function() {
                 if (!currentTeacherId || !currentClass) {
-                    showMessage(translations[currentLang].errorSelectTeacher, 'error');
+                    showMessage(t.errorSelectTeacher, 'error');
                     return;
                 }
-                var t = translations[currentLang];
                 if (confirm(t.resetAllConfirm)) {
                     originalStudentNames.forEach(function(name) {
                         if (data[name]) {
@@ -3526,20 +4634,19 @@
             });
 
             classTitleInput.addEventListener("input", async function() {
-                var t = translations[currentLang];
-                boardTitleEl.textContent = t.boardTitle + ' - ' + classTitleInput.value;
+                boardTitleEl.textContent = "📋 Teacher Dashboard - " + classTitleInput.value;
                 await saveAll();
             });
 
             studentsContainer.addEventListener('click', function(e) {
-                var t = e.target.closest('.student');
-                if (!t) return;
+                var el = e.target.closest('.student');
+                if (!el) return;
                 if (selectedStudent) {
                     var old = document.querySelector('.student[data-name="' + selectedStudent + '"]');
                     if (old) old.classList.remove('selected');
                 }
-                selectedStudent = t.dataset.name;
-                t.classList.add('selected');
+                selectedStudent = el.dataset.name;
+                el.classList.add('selected');
             });
 
             document.addEventListener('keydown', async function(e) {
@@ -3550,11 +4657,12 @@
                 if (e.key === '4') await setStudentState(selectedStudent, 4);
                 if (e.key === '5') await setStudentState(selectedStudent, 5);
                 if (e.key === '0') await setStudentState(selectedStudent, 0);
-                if (e.key === 'l' || e.key === 'L') await incrementCounter(selectedStudent, 'latenessCounter', 'msgLateness');
+                if (e.key === 'l' || e.key === 'L') await incrementCounter(selectedStudent, 'latenessCounter',
+                    'msgLateness');
                 if (e.key.toLowerCase() === 'r') await resetStudentCounters(selectedStudent);
                 if (e.key === 'Escape') {
-                    var t = document.querySelector('.student[data-name="' + selectedStudent + '"]');
-                    if (t) t.classList.remove('selected');
+                    var tgt = document.querySelector('.student[data-name="' + selectedStudent + '"]');
+                    if (tgt) tgt.classList.remove('selected');
                     selectedStudent = null;
                 }
             });
@@ -3562,8 +4670,7 @@
             // ===== Initialization =====
             updateClassSelect();
             initTeacherSelect();
-            // Force English
-            applyLanguage('en');
+            applyEnglish();
             renderCalendar();
 
             if (isFirebaseInitialized) {
@@ -3575,7 +4682,18 @@
                 }, 100);
             }
 
+            // ===== Auto-select first teacher and class (Added) =====
             setTimeout(function() {
+                if (teachersList.length > 0) {
+                    var firstTeacher = teachersList[0];
+                    teacherSelect.value = firstTeacher.id;
+                    selectTeacher(firstTeacher.id);
+                }
+                if (classesList.length > 0) {
+                    var firstClass = classesList[0];
+                    classSelect.value = firstClass;
+                    selectClass(firstClass);
+                }
                 if (currentTeacherId && currentClass) {
                     loadData();
                 }
